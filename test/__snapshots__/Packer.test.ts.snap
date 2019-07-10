@@ -1,0 +1,113 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Packer should aggregate any analytics 1`] = `
+Object {
+  "dependencies": Object {
+    "external": Object {
+      "debug": "*",
+    },
+    "internal": Array [
+      Object {
+        "description": "",
+        "location": "/Users/janbiasi/github/monopacker/test/fixtures/basic/packages/sub",
+        "name": "@fixture/sub",
+        "private": false,
+        "version": "0.1.0",
+      },
+    ],
+    "peer": Object {
+      "smallest": "1.0.1",
+    },
+  },
+  "graph": Object {
+    "@fixture/sub": Object {
+      "smallest": "1.0.1",
+    },
+  },
+}
+`;
+
+exports[`Packer should generate a hash for the packed bundle 1`] = `"58caf88b5bbceb80b3a0dc82ed0cdfa2408a9aeae32ffc64756de519824d5aed"`;
+
+exports[`Packer should generate a monopacker.analytics.json file 1`] = `
+Object {
+  "dependencies": Object {
+    "external": Object {
+      "debug": "*",
+    },
+    "internal": Array [
+      Object {
+        "description": "",
+        "location": "/Users/janbiasi/github/monopacker/test/fixtures/basic/packages/sub",
+        "name": "@fixture/sub",
+        "private": false,
+        "version": "0.1.0",
+      },
+    ],
+    "peer": Object {
+      "smallest": "1.0.1",
+    },
+  },
+  "graph": Object {
+    "@fixture/sub": Object {
+      "smallest": "1.0.1",
+    },
+  },
+}
+`;
+
+exports[`Packer should generate a monopacker.analytics.json file 2`] = `
+Object {
+  "dependencies": Object {
+    "external": Object {
+      "debug": "*",
+    },
+    "internal": Array [
+      Object {
+        "description": "",
+        "location": "/Users/janbiasi/github/monopacker/test/fixtures/basic/packages/sub",
+        "name": "@fixture/sub",
+        "private": false,
+        "version": "0.1.0",
+      },
+    ],
+    "peer": Object {
+      "smallest": "1.0.1",
+    },
+  },
+  "graph": Object {
+    "@fixture/sub": Object {
+      "smallest": "1.0.1",
+    },
+  },
+}
+`;
+
+exports[`Packer should generate an artificial package correctly 1`] = `
+Object {
+  "dependencies": Object {
+    "debug": "*",
+    "smallest": "1.0.1",
+  },
+  "description": "",
+  "monopacker": Object {
+    "hash": "58caf88b5bbceb80b3a0dc82ed0cdfa2408a9aeae32ffc64756de519824d5aed",
+    "linked": Object {
+      "@fixture/sub": "0.1.0",
+    },
+    "version": "1.0.0",
+  },
+  "name": "@fixture/main-packed",
+  "version": "0.2.7",
+}
+`;
+
+exports[`Packer should generate correct metadata for the packed bundle 1`] = `
+Object {
+  "hash": "58caf88b5bbceb80b3a0dc82ed0cdfa2408a9aeae32ffc64756de519824d5aed",
+  "linked": Object {
+    "@fixture/sub": "0.1.0",
+  },
+  "version": "1.0.0",
+}
+`;

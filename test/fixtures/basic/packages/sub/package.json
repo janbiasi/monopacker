@@ -1,0 +1,14 @@
+{
+  "name": "@fixture/sub",
+  "version": "0.1.0",
+  "main": "./src/index.js",
+  "dependencies": {
+    "smallest": "1.0.1"
+  },
+  "devDependencies": {
+    "fs-extra": "8.1.0"
+  },
+  "peerDependencies": {
+    "fs-extra": "8.1.0"
+  }
+}

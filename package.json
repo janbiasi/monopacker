@@ -1,0 +1,43 @@
+{
+  "name": "monopacker",
+  "version": "1.0.0",
+  "description": "A tool for managing builds of monorepo frontend projects with eg. lerna or similar tools.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc -p tsconfig.json",
+    "prettier": "prettier --write \"**/*.{json,ts,js}\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janbiasi/monopacker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/janbiasi/monopacker/issues"
+  },
+  "homepage": "https://github.com/janbiasi/monopacker#readme",
+  "devDependencies": {
+    "@types/execa": "0.9.0",
+    "@types/fs-extra": "8.0.0",
+    "@types/jest": "24.0.15",
+    "@types/ncp": "2.0.1",
+    "@types/matcher": "1.1.0",
+    "@types/rimraf": "2.0.2",
+    "execa": "2.0.3",
+    "fs-extra": "8.1.0",
+    "glob": "7.1.4",
+    "matcher": "2.0.0",
+    "jest": "24.8.0",
+    "lerna": "3.15.0",
+    "ncp": "2.0.0",
+    "ora": "3.4.0",
+    "prettier": "1.18.2",
+    "rc": "1.2.8",
+    "rimraf": "2.6.3",
+    "ts-jest": "24.0.2",
+    "typescript": "3.5.2"
+  }
+}

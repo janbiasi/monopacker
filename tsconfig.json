@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"module": "commonjs",
+		"rootDir": ".",
+		"baseUrl": "./src",
+		"moduleResolution": "node",
+		"declaration": true,
+		"sourceMap": true,
+		"resolveJsonModule": true
+	}
+}
