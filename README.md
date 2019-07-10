@@ -4,22 +4,12 @@ A tool for managing builds of monorepo frontend projects with eg. lerna or simil
 ### Simple example
 
 ```ts
-import { resolve } from 'path';
-import * as rimraf from 'rimraf';
-import * as execa from 'execa';
 import { Packer } from 'monopacker';
 
-const ROOT = resolve(__dirname, '..');
-
-(async () => {
-    const packer = new Packer({
-        root: 'packages/apps/my-app',
-        target: 'packed/my-app',
-    });
-
-    await packer.pack();
-    console.log('done!');
-})();
+new Packer({
+    root: 'packages/apps/my-app',
+    target: 'packed/my-app',
+}).pack();
 ```
 
 
@@ -63,5 +53,5 @@ const ROOT = resolve(__dirname, '..');
 
     await packer.pack();
     console.log('done!');
-})();
+})();q
 ```
