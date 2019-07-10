@@ -1,4 +1,4 @@
-export interface LernaConfig {
+export interface ILernaConfig {
 	command?: {
 		[command: string]: object;
 	};
@@ -6,7 +6,7 @@ export interface LernaConfig {
 	packages: string[];
 }
 
-export interface LernaPackageListEntry {
+export interface ILernaPackageListEntry {
 	name: string;
 	description?: string;
 	version: string;
@@ -14,4 +14,4 @@ export interface LernaPackageListEntry {
 	location: string;
 }
 
-export type LernaPackageList = LernaPackageListEntry[];
+export type LernaPackageList = ILernaPackageListEntry[];

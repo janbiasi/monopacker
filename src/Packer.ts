@@ -1,8 +1,10 @@
 import { resolve, join, isAbsolute } from 'path';
 import { createHash } from 'crypto';
-import { Options, Package, HookPhase, Analytics, LernaPackageList, DependenciesLike, LernaPackageListEntry } from './types';
+import { IPackerOptions, Package, HookPhase, IAnalytics, LernaPackageList, DependenciesLike, ILernaPackageListEntry, IAdapter } from './types';
 import { fs, getLernaPackages, extractDependencies, asyncForEach, pkg, rimraf, copyDir, matcher, execa } from './utils';
 import { Taper } from './Taper';
+import { AdapterLerna } from './adapter/Lerna';
+import { Adapter } from './adapter/Adapter';
 
 const neededCopySettings = [
 	'**',
@@ -25,16 +27,22 @@ export class Packer {
 	public static version = pkg.version;
 
 	// taping injection
-	private taper: Taper<HookPhase, Options['hooks']>;
+	private taper: Taper<HookPhase, IPackerOptions['hooks']>;
+	// adapter for analytics
+	private adapter: IAdapter;
 
 	// caching maps for better performance
 	private packageCache = new Map<string, Package>();
-	private analyticsCache = new WeakMap<Options, Analytics>();
+	private analyticsCache = new WeakMap<IPackerOptions, IAnalytics>();
 	private packedPackageCache = new WeakMap<Packer, Package>();
 
-	constructor(private options: Options) {
+	constructor(private options: IPackerOptions) {
 		// create taper for packer
 		this.taper = new Taper(this, this.hooks);
+		// use provided or set default adapter, TODO: auto-detect
+		this.adapter = options.adapter
+			? new options.adapter(this.cwd, this.options)
+			: new AdapterLerna(this.cwd, this.options);
 		// set cache by default to true
 		options.cache = options.cache === false ? false : true;
 		// verify correct paths from cwd setting
@@ -50,7 +58,7 @@ export class Packer {
 		this.taper.tap(HookPhase.INIT);
 	}
 
-	private get hooks(): Options['hooks'] {
+	private get hooks(): IPackerOptions['hooks'] {
 		return this.options.hooks || {};
 	}
 
@@ -157,7 +165,7 @@ export class Packer {
 	 * Might be delivered from cache when running parallel processes, can be disabled
 	 * in the options.
 	 */
-	public async analyze(): Promise<Analytics> {
+	public async analyze(): Promise<IAnalytics> {
 		if (this.analyticsCache.has(this.options)) {
 			return this.analyticsCache.get(this.options);
 		}
@@ -165,66 +173,16 @@ export class Packer {
 		try {
 			await this.taper.tap(HookPhase.PREANALYZE);
 			await this.prepare();
-			const sourcePkg = await this.fetchSourcePackage();
-			const lernaPkgs = await this.getLernaPackages();
-			const internalPackageNames = lernaPkgs.map(pkg => pkg.name);
-			// aggregation of installable external dependencies
-			const requiredProductionDeps = extractDependencies(sourcePkg.dependencies, dependency => {
-				return internalPackageNames.indexOf(dependency) === -1;
-			});
-			// aggregation of internal dependencies
-			const requiredInternalDeps = extractDependencies(sourcePkg.dependencies, dependency => {
-				return internalPackageNames.indexOf(dependency) > -1;
-			});
-			const internalDependencyNames = Object.keys(requiredInternalDeps);
-			const internalDependencies = lernaPkgs.filter(({ name }) => {
-				if (name === sourcePkg.name) {
-					// skip self
-					return false;
-				}
-				// skip unneeded
-				return internalDependencyNames.indexOf(name) > -1;
-			});
-
-			// aggregating and building graph for sub-modules
-			const peer: DependenciesLike = {};
-			const graph: Analytics['graph'] = {};
-			await asyncForEach(internalDependencies, async ({ name, location }) => {
-				const subPkg = await this.fetchPackage(`${location}/package.json`);
-				const installablePeers = extractDependencies(subPkg.dependencies, dependency => {
-					if (dependency === sourcePkg.name) {
-						// skip self
-						return false;
-					}
-
-					// skip internals atm.
-					return internalPackageNames.indexOf(dependency) === -1;
-				});
-
-				// building graph and peers
-				Object.assign(graph, {
-					[subPkg.name]: installablePeers
-				});
-				Object.assign(peer, installablePeers);
-			});
-
-			const result = {
-				dependencies: {
-					external: requiredProductionDeps,
-					internal: internalDependencies,
-					peer
-				},
-				graph
-			};
+			const analytics = await this.adapter.analyze();
 
 			// tap and write analytics
-			await this.taper.tap(HookPhase.POSTANALYZE, result);
+			await this.taper.tap(HookPhase.POSTANALYZE, analytics);
 			await fs.writeFile(
 				resolve(this.options.target, 'monopacker.analytics.json'),
-				JSON.stringify(result, null, 2)
+				JSON.stringify(analytics, null, 2)
 			);
 
-			return result;
+			return analytics;
 		} catch (err) {
 			throw new Error(`Failed to aggregate analytics: ${err.message}`);
 		}

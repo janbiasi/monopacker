@@ -5,7 +5,7 @@ import * as glob from 'glob';
 import * as matcher from 'matcher';
 import { dirname, relative, join, resolve } from 'path';
 import { ncp } from 'ncp';
-import { DependenciesLike, LernaPackageList, Package, LernaPackageListEntry } from './types';
+import { DependenciesLike, LernaPackageList, Package, ILernaPackageListEntry } from './types';
 
 export function rimraf(pathName: string, options: _rimraf.Options = {}): Promise<void> {
 	return new Promise((resolve, reject) => {

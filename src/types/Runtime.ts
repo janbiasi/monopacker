@@ -1,6 +1,7 @@
 import { TaperFunction } from '../Taper';
 import { DependenciesLike } from './Package';
 import { LernaPackageList } from './Lerna';
+import { IAdapterConstructable } from './Adapter';
 
 export enum HookPhase {
 	INIT = 'init',
@@ -13,7 +14,7 @@ export enum HookPhase {
 	PACKED = 'packed'
 }
 
-export interface Options {
+export interface IPackerOptions {
 	/**
 	 * Source to pack (root is cwd)
 	 */
@@ -40,6 +41,10 @@ export interface Options {
 	 */
 	internals: string[];
 	/**
+	 * The adapter for the analytics process, default: lerna
+	 */
+	adapter?: IAdapterConstructable,
+	/**
 	 * Optional copy settings, defaults to `['**']`
 	 */
 	copy?: string[];
@@ -51,13 +56,13 @@ export interface Options {
 	};
 }
 
-export interface Analytics {
+export interface IAnalytics {
 	dependencies: {
 		internal: LernaPackageList;
 		external: DependenciesLike;
 		peer: DependenciesLike;
 	};
 	graph?: {
-		[packageName: string]: Analytics['graph'] | Record<string, string>;
+		[packageName: string]: IAnalytics['graph'] | Record<string, string>;
 	};
 }
