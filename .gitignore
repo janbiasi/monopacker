@@ -68,3 +68,6 @@ test/temp
 
 # compiled output
 build
+
+# test packed
+packed

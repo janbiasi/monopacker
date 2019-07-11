@@ -10,7 +10,5 @@
 		"sourceMap": true,
 		"resolveJsonModule": true
 	},
-	"exclude": [
-		"test"
-	]
+	"exclude": ["test"]
 }

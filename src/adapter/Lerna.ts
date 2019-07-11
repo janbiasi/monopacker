@@ -1,7 +1,7 @@
-import { join } from "path";
-import { Adapter } from "./Adapter";
-import { getLernaPackages, asyncForEach, extractDependencies, fs } from "../utils";
-import { LernaPackageList, DependenciesLike, IAnalytics, Package } from "../types";
+import { join } from 'path';
+import { Adapter } from './Adapter';
+import { getLernaPackages, asyncForEach, extractDependencies, fs } from '../utils';
+import { LernaPackageList, DependenciesLike, IAnalytics, Package } from '../types';
 
 export class AdapterLerna extends Adapter {
 	private packageCache = new Map<string, Package>();
@@ -78,7 +78,7 @@ export class AdapterLerna extends Adapter {
 			// aggregating and building graph for sub-modules
 			const peer: DependenciesLike = {};
 			const graph: IAnalytics['graph'] = {};
-			await asyncForEach(internalDependencies, async ({ name, location }) => {
+			await asyncForEach(internalDependencies, async ({ location }) => {
 				const subPkg = await this.fetchPackage(`${location}/package.json`);
 				const installablePeers = extractDependencies(subPkg.dependencies, dependency => {
 					if (dependency === sourcePkg.name) {

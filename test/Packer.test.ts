@@ -1,31 +1,22 @@
 import { resolve, join } from 'path';
-import * as rimraf from 'rimraf';
 import { Packer } from '../src/Packer';
 import { fs } from '../src/utils';
 import { HookPhase } from '../src/types';
 
+// hack to not provide this as option.cwd in packer ctor
 process.chdir(resolve(__dirname, 'fixtures/basic'));
 
 const TEMP = resolve(__dirname, 'temp');
-// const FIXTURE_BASIC_PATH_MAIN = resolve(__dirname, 'fixtures/basic/packages/main');
-// const FIXTURE_BASIC_PATH_SUB = resolve(__dirname, 'fixtures/basic/packages/sub');
 
-const cleanTempFolder = async () => {
-	// clean temp directory before each test
-	await rimraf(TEMP, () => { });
-};
-
-const createTestPacker = (hooks?: Packer['hooks']) => new Packer({
-	source: 'packages/main',
-	target: TEMP,
-	internals: ['@fixture'],
-	hooks
-});
+const createTestPacker = (hooks?: Packer['hooks']) =>
+	new Packer({
+		source: 'packages/main',
+		target: TEMP,
+		hooks
+	});
 
 describe('Packer', () => {
-
 	describe('Lerna', () => {
-
 		it('should aggregate any analytics', async () => {
 			const packer = createTestPacker();
 			const analytics = await packer.analyze();
@@ -86,12 +77,12 @@ describe('Packer', () => {
 				[HookPhase.POSTCOPY]: [fakeHook],
 				[HookPhase.POSTINSTALL]: [fakeHook],
 				[HookPhase.PREANALYZE]: [fakeHook],
+				[HookPhase.PRELINK]: [fakeHook],
+				[HookPhase.POSTLINK]: [fakeHook],
 				[HookPhase.PRECOPY]: [fakeHook],
-				[HookPhase.PREINSTALL]: [fakeHook],
-			})
+				[HookPhase.PREINSTALL]: [fakeHook]
+			});
 			await packer.pack();
-			// 1x pre/post copy for whole directory, 1x pre/post copy for submodules
-			// 6x other hooks
 			expect(fakeHook).toBeCalledTimes(10);
 		});
 
@@ -122,7 +113,9 @@ describe('Packer', () => {
 			const subModuleExists = await fs.pathExists(resolve(TEMP, 'node_modules', '@fixture', 'sub'));
 			expect(subModuleExists).toBe(true);
 
-			expect(require(resolve(TEMP, 'node_modules', '@fixture', 'sub', 'src', 'index.js'))).toEqual('Hello from sub');
+			expect(require(resolve(TEMP, 'node_modules', '@fixture', 'sub', 'src', 'index.js'))).toEqual(
+				'Hello from sub'
+			);
 		});
 
 		it('should generate correct metadata for the packed bundle', async () => {
@@ -144,5 +137,5 @@ describe('Packer', () => {
 			expect(generatedPkg.monopacker.hash.length).toBeGreaterThan(0);
 			expect(generatedPkg.monopacker.hash).toMatchSnapshot();
 		});
-	})
+	});
 });

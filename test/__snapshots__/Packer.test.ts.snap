@@ -24,10 +24,11 @@ Object {
       "smallest": "1.0.1",
     },
   },
+  "integrity": "a6f45535ac6082d0e0067d9e02c168d69626bd6333c9aea6d38b0eadae0de14c",
 }
 `;
 
-exports[`Packer Lerna should generate a hash for the packed bundle 1`] = `"58caf88b5bbceb80b3a0dc82ed0cdfa2408a9aeae32ffc64756de519824d5aed"`;
+exports[`Packer Lerna should generate a hash for the packed bundle 1`] = `"b2993282819eec66b266565a2f6d1b6283b85e836c4f4b932cfe28bfbf5d7498"`;
 
 exports[`Packer Lerna should generate a monopacker.analytics.json file 1`] = `
 Object {
@@ -53,6 +54,7 @@ Object {
       "smallest": "1.0.1",
     },
   },
+  "integrity": "a6f45535ac6082d0e0067d9e02c168d69626bd6333c9aea6d38b0eadae0de14c",
 }
 `;
 
@@ -80,6 +82,7 @@ Object {
       "smallest": "1.0.1",
     },
   },
+  "integrity": "a6f45535ac6082d0e0067d9e02c168d69626bd6333c9aea6d38b0eadae0de14c",
 }
 `;
 
@@ -91,7 +94,7 @@ Object {
   },
   "description": "",
   "monopacker": Object {
-    "hash": "58caf88b5bbceb80b3a0dc82ed0cdfa2408a9aeae32ffc64756de519824d5aed",
+    "hash": "b2993282819eec66b266565a2f6d1b6283b85e836c4f4b932cfe28bfbf5d7498",
     "linked": Object {
       "@fixture/sub": "0.1.0",
     },
@@ -104,7 +107,7 @@ Object {
 
 exports[`Packer Lerna should generate correct metadata for the packed bundle 1`] = `
 Object {
-  "hash": "58caf88b5bbceb80b3a0dc82ed0cdfa2408a9aeae32ffc64756de519824d5aed",
+  "hash": "b2993282819eec66b266565a2f6d1b6283b85e836c4f4b932cfe28bfbf5d7498",
   "linked": Object {
     "@fixture/sub": "0.1.0",
   },

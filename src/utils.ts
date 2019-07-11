@@ -1,9 +1,10 @@
+import { dirname, relative, join, resolve } from 'path';
+import { createHash as createNativeHash } from 'crypto';
 import * as execa from 'execa';
 import * as _rimraf from 'rimraf';
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
 import * as matcher from 'matcher';
-import { dirname, relative, join, resolve } from 'path';
 import { ncp } from 'ncp';
 import { DependenciesLike, LernaPackageList, Package, ILernaPackageListEntry } from './types';
 
@@ -149,6 +150,14 @@ export function countMsg(countable: Record<string, string> | any[], singular: st
 	}
 
 	return size === 1 ? `1 ${singular}` : `${size} ${plural}`;
+}
+
+export function displayPath(base: string, toDisplay: string) {
+	return resolve(toDisplay).replace(resolve(base), '~');
+}
+
+export function createHash(value: string) {
+	return createNativeHash('sha256').update(value).digest('hex')
 }
 
 export const pkg = require('../package.json');

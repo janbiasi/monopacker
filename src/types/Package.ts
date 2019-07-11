@@ -10,3 +10,19 @@ export interface Package {
 	devDependencies?: DependenciesLike;
 	peerDependencies?: DependenciesLike;
 }
+
+export interface ArtificalPackage {
+	name: string;
+	version: string;
+	description: string;
+	monopacker: {
+		hash: string;
+		version: string;
+		linked: {
+			[name: string]: string;
+		};
+	};
+	dependencies: {
+		[name: string]: string;
+	};
+}

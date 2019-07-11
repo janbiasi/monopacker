@@ -1,16 +1,19 @@
 import { resolve, join, isAbsolute } from 'path';
-import { createHash } from 'crypto';
-import { IPackerOptions, Package, HookPhase, IAnalytics, LernaPackageList, DependenciesLike, ILernaPackageListEntry, IAdapter } from './types';
-import { fs, getLernaPackages, extractDependencies, asyncForEach, pkg, rimraf, copyDir, matcher, execa } from './utils';
+import {
+	IPackerOptions,
+	Package,
+	HookPhase,
+	IAnalytics,
+	DependenciesLike,
+	IAdapter,
+	ArtificalPackage,
+	IAnalyticsWithIntegrity
+} from './types';
+import { fs, asyncForEach, pkg, rimraf, copyDir, matcher, execa, displayPath, createHash } from './utils';
 import { Taper } from './Taper';
-import { AdapterLerna } from './adapter/Lerna';
-import { Adapter } from './adapter/Adapter';
+import { AdapterLerna } from './adapter';
 
-const neededCopySettings = [
-	'**',
-	'!node_modules',
-	'!package.json',
-]
+const neededCopySettings = ['**', '!node_modules', '!package.json'];
 
 const defaultCopySettings = [
 	...neededCopySettings,
@@ -23,18 +26,20 @@ const defaultCopySettings = [
 	'!tsconfig*.json'
 ];
 
+export const DEFAULT_PACKED_PATH = 'packed';
+
 export class Packer {
-	public static version = pkg.version;
+	public static version: string = pkg.version;
 
 	// taping injection
-	private taper: Taper<HookPhase, IPackerOptions['hooks']>;
+	private taper: Taper<HookPhase, Required<IPackerOptions['hooks']>>;
 	// adapter for analytics
 	private adapter: IAdapter;
 
 	// caching maps for better performance
 	private packageCache = new Map<string, Package>();
 	private analyticsCache = new WeakMap<IPackerOptions, IAnalytics>();
-	private packedPackageCache = new WeakMap<Packer, Package>();
+	private packedPackageCache = new WeakMap<Packer, ArtificalPackage>();
 
 	constructor(private options: IPackerOptions) {
 		// create taper for packer
@@ -47,21 +52,25 @@ export class Packer {
 		options.cache = options.cache === false ? false : true;
 		// verify correct paths from cwd setting
 		options.source = this.resolvePath(options.source);
-		options.target = this.resolvePath(options.target);
+		options.target = this.resolvePath(options.target || DEFAULT_PACKED_PATH);
 		// verify copy options
-		options.copy = options.copy
-			? neededCopySettings.concat(options.copy)
-			: defaultCopySettings;
+		options.copy = options.copy ? neededCopySettings.concat(options.copy) : defaultCopySettings;
 		// set current working directory to cwd
 		process.chdir(this.cwd);
 		// tape initialization
 		this.taper.tap(HookPhase.INIT);
 	}
 
+	/**
+	 * Returns the hooks object safely
+	 */
 	private get hooks(): IPackerOptions['hooks'] {
-		return this.options.hooks || {};
+		return this.options.hooks || ({} as IPackerOptions['hooks']);
 	}
 
+	/**
+	 * Returns the current working directory
+	 */
 	private get cwd(): string {
 		return this.options.cwd || process.cwd();
 	}
@@ -88,6 +97,9 @@ export class Packer {
 		}
 	}
 
+	/**
+	 * Fetches the source package via `fetchPackage`
+	 */
 	private async fetchSourcePackage(): Promise<Package> {
 		const sourcePkgPath = join(this.options.source, 'package.json');
 
@@ -111,14 +123,13 @@ export class Packer {
 	}
 
 	/**
-	 * Fetch all lerna packages from the defined cwd
+	 * Validates the current environment
 	 */
-	public async getLernaPackages(): Promise<LernaPackageList> {
-		try {
-			return await getLernaPackages(this.cwd);
-		} catch (err) {
-			throw new Error(`Failed to fetch lerna packages: ${err.message}`);
-		}
+	public async validate(): Promise<boolean> {
+		const sourceExists = await fs.pathExists(this.options.source);
+		const sourcePkgExists = await fs.pathExists(resolve(this.options.source, 'package.json'));
+
+		return sourceExists && sourcePkgExists;
 	}
 
 	/**
@@ -140,9 +151,13 @@ export class Packer {
 				cwd: this.options.source
 			});
 		} catch (err) {
-			throw new Error(`Failed command execution ${command} ${args.join(' ')} (in source)`);
+			throw new Error(
+				`Failed command execution ${command} ${args.join(' ')}: ${err.message} (in source ${displayPath(
+					this.cwd,
+					this.options.source
+				)})`
+			);
 		}
-
 	}
 
 	/**
@@ -150,13 +165,18 @@ export class Packer {
 	 * @param {string} command
 	 * @param {string[]} args
 	 */
-	public async runInTarget(command: string, args?: string[]) {
+	public async runInTarget(command: string, args: string[] = []) {
 		try {
 			return await execa(command, args, {
 				cwd: this.options.target
 			});
 		} catch (err) {
-			throw new Error(`Failed command execution ${command} ${args.join(' ')} (in target)`);
+			throw new Error(
+				`Failed command execution ${command} ${args.join(' ')}: ${err.message} (in target ${displayPath(
+					this.cwd,
+					this.options.target
+				)})`
+			);
 		}
 	}
 
@@ -165,7 +185,12 @@ export class Packer {
 	 * Might be delivered from cache when running parallel processes, can be disabled
 	 * in the options.
 	 */
-	public async analyze(): Promise<IAnalytics> {
+	public async analyze(generateAnalyticsFile: boolean = true): Promise<IAnalytics> {
+		const everythingsAllright = await this.validate();
+		if (!everythingsAllright) {
+			throw new Error(`Invalid options provided, check if all paths exists`);
+		}
+
 		if (this.analyticsCache.has(this.options)) {
 			return this.analyticsCache.get(this.options);
 		}
@@ -175,12 +200,21 @@ export class Packer {
 			await this.prepare();
 			const analytics = await this.adapter.analyze();
 
+			// set integrity hash for checks
+			(analytics as IAnalyticsWithIntegrity).integrity = createHash(Packer.version + JSON.stringify(analytics));
+
 			// tap and write analytics
-			await this.taper.tap(HookPhase.POSTANALYZE, analytics);
-			await fs.writeFile(
-				resolve(this.options.target, 'monopacker.analytics.json'),
-				JSON.stringify(analytics, null, 2)
-			);
+			await this.taper.tap(HookPhase.POSTANALYZE, {
+				analytics,
+				generateAnalyticsFile,
+				fromCache: false
+			});
+			if (generateAnalyticsFile) {
+				await fs.writeFile(
+					resolve(this.options.target, 'monopacker.analytics.json'),
+					JSON.stringify(analytics, null, 2)
+				);
+			}
 
 			return analytics;
 		} catch (err) {
@@ -188,23 +222,33 @@ export class Packer {
 		}
 	}
 
+	/**
+	 * Main pack method which aggregates analytics, builds artificial package file,
+	 * copies local submodules and all the other magic.
+	 */
 	public async pack() {
 		try {
 			const analytics = await this.analyze();
 			const sourcePkg = await this.fetchSourcePackage();
 
 			// build artifical package.json file
-			const artificalPackageInfo = this.packedPackageCache.get(this) || {
+			const artificalPackageInfo: ArtificalPackage = this.packedPackageCache.get(this) || {
 				name: `${sourcePkg.name}-packed`,
 				version: sourcePkg.version || '0.0.0',
 				description: sourcePkg.description || '',
 				monopacker: {
-					hash: createHash('sha256').update(JSON.stringify(analytics)).digest('hex'),
+					// create unique hash out of the analytics
+					hash: createHash(Packer.version + JSON.stringify(analytics)),
+					// reference packer version
 					version: Packer.version,
-					linked: analytics.dependencies.internal.reduce((prev, { name, version }) => ({
-						...prev,
-						[name]: version
-					}), {})
+					// common NPM tree out of lerna packages
+					linked: analytics.dependencies.internal.reduce(
+						(prev, { name, version }) => ({
+							...prev,
+							[name]: version
+						}),
+						{} as DependenciesLike
+					)
 				},
 				dependencies: {
 					...analytics.dependencies.external, // main prod. dependencies
@@ -219,13 +263,22 @@ export class Packer {
 
 			// copy all source files by options
 			await this.taper.tap(HookPhase.PRECOPY);
+			const copiedFiles: string[] = [];
 			await copyDir(this.options.source, this.options.target, {
 				dereference: true,
 				filter: fileName => {
-					return this.options.copy.map(filter => matcher.isMatch(fileName, filter)).every(v => v === true);
+					const doesMatchCriteria = this.options.copy
+						.map(filter => matcher.isMatch(fileName, filter))
+						.every(v => v === true);
+
+					if (doesMatchCriteria) {
+						copiedFiles.push(fileName);
+					}
+
+					return doesMatchCriteria;
 				}
 			});
-			await this.taper.tap(HookPhase.POSTCOPY);
+			await this.taper.tap(HookPhase.POSTCOPY, copiedFiles);
 
 			// create artificial target package.json
 			await fs.writeFile(
@@ -239,16 +292,23 @@ export class Packer {
 			await this.taper.tap(HookPhase.POSTINSTALL, artificalPackageInfo);
 
 			// copy symlinked sub-modules
-			await this.taper.tap(HookPhase.PRECOPY, analytics.dependencies.internal);
+			await this.taper.tap(HookPhase.PRELINK, analytics.dependencies.internal);
 			await asyncForEach(analytics.dependencies.internal, async lernaPkg => {
 				const syntheticModulePath = resolve(this.options.target, 'node_modules', lernaPkg.name);
 				await fs.mkdirp(syntheticModulePath);
 				await copyDir(lernaPkg.location, syntheticModulePath);
 			});
-			await this.taper.tap(HookPhase.POSTCOPY, analytics.dependencies.internal);
-			await this.taper.tap(HookPhase.PACKED, this);
+			await this.taper.tap(HookPhase.POSTLINK, analytics.dependencies.internal);
+
+			// finalize
+			await this.taper.tap(HookPhase.PACKED, {
+				analytics,
+				copiedFiles,
+				artificalPackage: artificalPackageInfo
+			});
 		} catch (err) {
-			throw new Error(`Failed to pack (source: ${this.options.source})`);
+			// simply show any child error on failure
+			throw err;
 		}
 	}
 }

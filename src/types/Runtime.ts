@@ -1,7 +1,8 @@
-import { TaperFunction } from '../Taper';
-import { DependenciesLike } from './Package';
+import { DependenciesLike, ArtificalPackage } from './Package';
 import { LernaPackageList } from './Lerna';
 import { IAdapterConstructable } from './Adapter';
+import { ILernaPackageListEntry } from './Lerna';
+import { Packer } from '../Packer';
 
 export enum HookPhase {
 	INIT = 'init',
@@ -9,6 +10,8 @@ export enum HookPhase {
 	POSTANALYZE = 'postanalyze',
 	PRECOPY = 'precopy',
 	POSTCOPY = 'postcopy',
+	PRELINK = 'prelink',
+	POSTLINK = 'postlink',
 	PREINSTALL = 'preinstall',
 	POSTINSTALL = 'postinstall',
 	PACKED = 'packed'
@@ -37,13 +40,15 @@ export interface IPackerOptions {
 	 */
 	cwd?: string;
 	/**
-	 * Expressions to match package names which are internally defined
+	 * TODO: Expressions to match package names which are internally defined (optional)
+	 * Can be used for eg. rewriting globally available modules such as 'react-scripts'
+	 * to provide a custom implementation for.
 	 */
-	internals: string[];
+	internals?: string[];
 	/**
 	 * The adapter for the analytics process, default: lerna
 	 */
-	adapter?: IAdapterConstructable,
+	adapter?: IAdapterConstructable;
 	/**
 	 * Optional copy settings, defaults to `['**']`
 	 */
@@ -51,9 +56,36 @@ export interface IPackerOptions {
 	/**
 	 * Define opt-in hooks for certain steps
 	 */
-	hooks?: {
-		[phase in HookPhase]?: TaperFunction[];
-	};
+	hooks?: Partial<{
+		[HookPhase.INIT]: Array<(packer: Packer) => Promise<any>>;
+		[HookPhase.PREANALYZE]: Array<(packer: Packer) => Promise<any>>;
+		[HookPhase.POSTANALYZE]: Array<
+			(
+				packer: Packer,
+				information: {
+					analytics: IAnalytics;
+					generateAnalyticsFile: boolean;
+					fromCache: boolean;
+				}
+			) => Promise<any>
+		>;
+		[HookPhase.PRECOPY]: Array<(packer: Packer) => Promise<any>>;
+		[HookPhase.POSTCOPY]: Array<(packer: Packer, copiedFiles: string[]) => Promise<any>>;
+		[HookPhase.PRELINK]: Array<(packer: Packer, entries: ILernaPackageListEntry[]) => Promise<any>>;
+		[HookPhase.POSTLINK]: Array<(packer: Packer, entries: ILernaPackageListEntry[]) => Promise<any>>;
+		[HookPhase.PREINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
+		[HookPhase.POSTINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
+		[HookPhase.PACKED]: Array<
+			(
+				packer: Packer,
+				resume: {
+					analytics: IAnalytics;
+					artificalPackage: ArtificalPackage;
+					copiedFiles: string[];
+				}
+			) => Promise<any>
+		>;
+	}>;
 }
 
 export interface IAnalytics {
@@ -65,4 +97,8 @@ export interface IAnalytics {
 	graph?: {
 		[packageName: string]: IAnalytics['graph'] | Record<string, string>;
 	};
+}
+
+export interface IAnalyticsWithIntegrity extends IAnalytics {
+	integrity: string
 }

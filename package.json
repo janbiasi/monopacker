@@ -2,9 +2,14 @@
   "name": "monopacker",
   "version": "1.0.0",
   "description": "A tool for managing builds of monorepo frontend projects with eg. lerna or similar tools.",
-  "main": "index.js",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "bin": {
+    "monopacker": "build/bin/monopacker-cli.js"
+  },
   "scripts": {
     "test": "jest",
+    "prebuild": "rimraf build",
     "build": "tsc -p tsconfig.json",
     "prettier": "prettier --write \"**/*.{json,ts,js}\""
   },
@@ -38,6 +43,7 @@
     "rc": "1.2.8",
     "rimraf": "2.6.3",
     "ts-jest": "24.0.2",
+    "ts-node": "8.3.0",
     "typescript": "3.5.2"
   }
 }
