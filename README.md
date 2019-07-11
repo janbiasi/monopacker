@@ -24,7 +24,7 @@ This is not possible by default, but there's monopacker - a tool for generating 
 - Monopacker can be configured what to copy and what not
 - Monopacker supports internal caching for repetetive processes and large repos with circular references
 
-## Installation
+## Installation
 
 ```sh
 npm install monopacker --save-dev --save-exact
@@ -221,7 +221,7 @@ import { Packer } from 'monopacker';
     });
 
     await packer.pack();
-    
+
     console.log('done!');
 })();q
 ```
