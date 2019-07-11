@@ -17,7 +17,7 @@ This is not possible by default, but there's monopacker - a tool for generating 
 6. Copy all needed submodules to the packed target to "fake" the installation
 7. Done! Your application is ready to deploy individually as it is.
 
-###### But I need to * __insert your requirement here__ * ...
+###### But I need to _&lt;insert your requirement here&gt;_ ...
 - Monopacker provides a flexible programmatical API
 - Monopacker provides also a CLI implementation
 - Monopacker supports a hook system where you are able to interact within every step of the packing process
@@ -191,12 +191,11 @@ import * as rimraf from 'rimraf';
 import * as execa from 'execa';
 import { Packer } from 'monopacker';
 
-const ROOT = resolve(__dirname, '..');
-
 (async () => {
     new Packer({
-        root: resolve(ROOT, 'packages/apps/my-app'),
-        target: resolve(ROOT, 'packed/my-app'),
+        cwd: resolve(__dirname, 'my-repo-is-nested'),
+        source: 'packages/apps/my-app',
+        target: 'packed/my-app',
         copy: [
             '!.cache',
             '!lcov-report',
@@ -222,6 +221,7 @@ const ROOT = resolve(__dirname, '..');
     });
 
     await packer.pack();
+    
     console.log('done!');
 })();q
 ```
