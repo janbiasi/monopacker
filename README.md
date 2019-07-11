@@ -3,6 +3,10 @@ A tool for managing builds of monorepo frontend projects with eg. lerna or simil
 monorepositories often have the problem that they need to deploy an application but don't want to deploy the whole repository.
 This is not possible by default, but there's monopacker - a tool for generating small bundles out of your monorepository applications which are straight deployable - with extras!
 
+* [Installation](#installation)
+* [CLI API](#cli-api)
+* [Programmatic API](#programmatic-api)
+
 ###### The process steps in depth
 
 1. Aggregate all dependencies of the target application
@@ -13,12 +17,20 @@ This is not possible by default, but there's monopacker - a tool for generating 
 6. Copy all needed submodules to the packed target to "fake" the installation
 7. Done! Your application is ready to deploy individually as it is.
 
-###### But I need to <insert your requirement here> ...
+###### But I need to * __insert your requirement here__ * ...
 - Monopacker provides a flexible programmatical API
 - Monopacker provides also a CLI implementation
 - Monopacker supports a hook system where you are able to interact within every step of the packing process
 - Monopacker can be configured what to copy and what not
 - Monopacker supports internal caching for repetetive processes and large repos with circular references
+
+## Installation
+
+```sh
+npm install monopacker --save-dev --save-exact
+# or with yarn
+yarn add monopacker --dev
+```
 
 ## CLI API
 
