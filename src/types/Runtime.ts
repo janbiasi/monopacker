@@ -54,6 +54,10 @@ export interface IPackerOptions {
 	 */
 	copy?: string[];
 	/**
+	 * Enable debugging, default: false
+	 */
+	debug?: boolean;
+	/**
 	 * Define opt-in hooks for certain steps
 	 */
 	hooks?: Partial<{

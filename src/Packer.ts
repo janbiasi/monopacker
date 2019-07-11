@@ -12,6 +12,7 @@ import {
 import { fs, asyncForEach, pkg, rimraf, copyDir, matcher, execa, displayPath, createHash } from './utils';
 import { Taper } from './Taper';
 import { AdapterLerna } from './adapter';
+import { useDebugHooks } from './helper/debug-hooks';
 
 const neededCopySettings = ['**', '!node_modules', '!package.json'];
 
@@ -55,6 +56,10 @@ export class Packer {
 		options.target = this.resolvePath(options.target || DEFAULT_PACKED_PATH);
 		// verify copy options
 		options.copy = options.copy ? neededCopySettings.concat(options.copy) : defaultCopySettings;
+		// enable debugging if needed
+		if (options.debug) {
+			this.taper.connect(new Taper(this, useDebugHooks(options)));
+		}
 		// set current working directory to cwd
 		process.chdir(this.cwd);
 		// tape initialization

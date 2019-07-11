@@ -9,6 +9,7 @@ export type InferredTaperFeedback<T> = T extends TaperFunction<infer F> ? F : an
 
 export class Taper<K extends string, T extends Record<K, TaperFunction<unknown>[]>> {
 	private forwarder: TaperReceiver[] = [];
+	private connected: Taper<K, T>[] = [];
 
 	constructor(private packer: Packer, private factory: Partial<T>) { }
 
@@ -28,9 +29,17 @@ export class Taper<K extends string, T extends Record<K, TaperFunction<unknown>[
 		}
 	}
 
+	public connect(taper: Taper<K, T>) {
+		this.connected.push(taper);
+	}
+
 	public async tap(point: K, arg?: InferredTaperFeedback<T[K]>) {
 		if (this.forwarder.length > 0) {
 			await asyncForEach(this.forwarder, forwarder => forwarder(point, arg));
+		}
+
+		if (this.connected.length > 0) {
+			await asyncForEach(this.connected, connected => connected.tap(point, arg));
 		}
 
 		if (!this.factory[point] || (this.factory[point] as T[K]).length === 0) {

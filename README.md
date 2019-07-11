@@ -171,13 +171,25 @@ interface IPackerOptions {
 }
 ```
 
+### Debugging
+
+```ts
+import { Packer } from 'monopacker';
+
+new Packer({
+    source: 'packages/apps/my-app',
+    target: 'packed/my-app',
+    debug: true // uses the helper `useDebugHooks`
+})
+```
+
 ### Simple example
 
 ```ts
 import { Packer } from 'monopacker';
 
 new Packer({
-    root: 'packages/apps/my-app',
+    source: 'packages/apps/my-app',
     target: 'packed/my-app',
 }).pack();
 ```

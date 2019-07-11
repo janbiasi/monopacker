@@ -18,7 +18,7 @@ export async function pack(opts: IPackerOptions) {
 		cache: opts.cache,
 		hooks: {
 			init: [
-				async packer => {
+				async () => {
 					spinner.succeed(
 						`Initialized packer v${Packer.version} for ${displayPath(
 							opts.cwd || CWD,
