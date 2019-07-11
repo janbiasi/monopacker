@@ -45,6 +45,7 @@ yarn add monopacker --dev
 ```sh
 # Will output a JSON graph of the packable application
 $ monopacker analyze packages/apps/main
+$ monopacker a packages/apps/main
 ```
 
 ### pack
@@ -58,6 +59,7 @@ $ monopacker analyze packages/apps/main
 ```sh
 # Will pack the application from `packages/apps/main` to `packed`
 $ monopacker pack packages/apps/main
+$ monopacker p packages/apps/main
 ```
 
 ```sh
@@ -171,7 +173,7 @@ interface IPackerOptions {
 }
 ```
 
-### Debugging
+### Debugging
 
 ```ts
 import { Packer } from 'monopacker';
@@ -180,8 +182,12 @@ new Packer({
     source: 'packages/apps/my-app',
     target: 'packed/my-app',
     debug: true // uses the helper `useDebugHooks`
-})
+});
 ```
+
+### Multi taping
+
+Not supported yet ...
 
 ### Simple example
 
