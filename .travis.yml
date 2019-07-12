@@ -12,6 +12,12 @@ install:
 script:
   - npm run test
 
+branches:
+  except:
+  - /^legacy\/.*$/
+  - /^experimental\/.*$/
+  - assets
+
 jobs:
   include:
     - stage: build
