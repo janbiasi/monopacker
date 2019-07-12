@@ -29,7 +29,7 @@ export class Taper<K extends string, T extends Record<K, TaperFunction<unknown>[
 		}
 	}
 
-	public connect(taper: Taper<K, T>) {
+	public stream(taper: Taper<K, T>) {
 		this.connected.push(taper);
 	}
 

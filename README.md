@@ -136,7 +136,11 @@ interface IPackerOptions {
 	/**
 	 * Optional copy settings, defaults to `['**', '!package.json', ...]`
 	 */
-	copy?: string[];
+    copy?: string[];
+    /**
+     * Enable the debug mode, defaults to false
+     */
+    debug?: boolean;
 	/**
 	 * Define opt-in hooks for certain steps
 	 */
@@ -185,9 +189,28 @@ new Packer({
 });
 ```
 
-### Multi taping
+### Multi taping
 
-Not supported yet ...
+```ts
+import { Packer, Taper, HookPhase } from 'monopacker';
+
+const packer = new Packer({
+    source: 'packages/apps/my-app',
+    target: 'packed/my-app',
+});
+
+packer.subscribe(
+    new Taper(HookPhase, {
+        // add some other hooks here which will be run before the target hooks
+        // can be used to separate taping logic conditionally.
+        init: [async () => console.log('Hello from subscription:init!')]
+    })
+);
+
+await packer.pack();
+```
+
+
 
 ### Simple example
 

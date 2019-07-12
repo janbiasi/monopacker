@@ -56,8 +56,10 @@ describe('Packer', () => {
 			expect(generatedPkg).toMatchSnapshot();
 			expect(generatedPkg.name).toEqual('@fixture/main-packed');
 			expect(generatedPkg.dependencies).toStrictEqual({
-				debug: '*',
-				smallest: '1.0.1'
+				"ansi-styles": "4.0.0", // from subsub
+				debug: '*', // from main
+				smallest: '1.0.1', // from sub
+				"supports-color": "7.0.0" // from subsubsub
 			});
 		});
 

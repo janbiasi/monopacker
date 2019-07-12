@@ -7,7 +7,9 @@ import { countMsg, displayPath } from '../../utils';
 const CWD = process.cwd();
 
 export async function pack(opts: IPackerOptions) {
-	let spinner = ora('Creating packer instance').start();
+	let spinner = ora('Creating packer instance');
+	spinner.frame();
+	spinner.start();
 	let installTimer: [number, number];
 
 	const packer = new Packer({

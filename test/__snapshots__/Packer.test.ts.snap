@@ -12,23 +12,59 @@ Object {
         "location": "/Users/janbiasi/github/monopacker/test/fixtures/basic/packages/sub",
         "name": "@fixture/sub",
         "private": false,
-        "version": "0.1.0",
+        "version": "0.1.3",
+      },
+      Object {
+        "description": "",
+        "location": "/Users/janbiasi/github/monopacker/test/fixtures/basic/packages/subsub",
+        "name": "@fixture/subsub",
+        "private": false,
+        "version": "0.1.3",
+      },
+      Object {
+        "description": "",
+        "location": "/Users/janbiasi/github/monopacker/test/fixtures/basic/packages/subsubsub",
+        "name": "@fixture/subsubsub",
+        "private": false,
+        "version": "0.1.3",
       },
     ],
     "peer": Object {
+      "ansi-styles": "4.0.0",
+      "debug": "*",
       "smallest": "1.0.1",
+      "supports-color": "7.0.0",
     },
   },
   "graph": Object {
+    "@fixture/main": Object {
+      "external": Object {
+        "ansi-styles": "4.0.0",
+        "debug": "*",
+        "smallest": "1.0.1",
+        "supports-color": "7.0.0",
+      },
+      "internal": Object {
+        "@fixture/subsub": "0.1.3",
+        "@fixture/subsubsub": "0.1.3",
+      },
+    },
     "@fixture/sub": Object {
       "smallest": "1.0.1",
     },
+    "@fixture/subsub": Object {
+      "debug": "*",
+    },
+    "@fixture/subsubsub": Object {
+      "ansi-styles": "4.0.0",
+      "supports-color": "7.0.0",
+    },
   },
-  "integrity": "a6f45535ac6082d0e0067d9e02c168d69626bd6333c9aea6d38b0eadae0de14c",
+  "integrity": "9caacbd59c04019716d5d7e6793d0cb187bf4ec63576f83b44e8752907ff735a",
 }
 `;
 
-exports[`Packer Lerna should generate a hash for the packed bundle 1`] = `"b2993282819eec66b266565a2f6d1b6283b85e836c4f4b932cfe28bfbf5d7498"`;
+exports[`Packer Lerna should generate a hash for the packed bundle 1`] = `"71dc7dca170abde2eef34f44669583dc35d6254d2b12d71fb5a32c1cb38941c8"`;
 
 exports[`Packer Lerna should generate a monopacker.analytics.json file 1`] = `
 Object {
@@ -42,19 +78,55 @@ Object {
         "location": "/Users/janbiasi/github/monopacker/test/fixtures/basic/packages/sub",
         "name": "@fixture/sub",
         "private": false,
-        "version": "0.1.0",
+        "version": "0.1.3",
+      },
+      Object {
+        "description": "",
+        "location": "/Users/janbiasi/github/monopacker/test/fixtures/basic/packages/subsub",
+        "name": "@fixture/subsub",
+        "private": false,
+        "version": "0.1.3",
+      },
+      Object {
+        "description": "",
+        "location": "/Users/janbiasi/github/monopacker/test/fixtures/basic/packages/subsubsub",
+        "name": "@fixture/subsubsub",
+        "private": false,
+        "version": "0.1.3",
       },
     ],
     "peer": Object {
+      "ansi-styles": "4.0.0",
+      "debug": "*",
       "smallest": "1.0.1",
+      "supports-color": "7.0.0",
     },
   },
   "graph": Object {
+    "@fixture/main": Object {
+      "external": Object {
+        "ansi-styles": "4.0.0",
+        "debug": "*",
+        "smallest": "1.0.1",
+        "supports-color": "7.0.0",
+      },
+      "internal": Object {
+        "@fixture/subsub": "0.1.3",
+        "@fixture/subsubsub": "0.1.3",
+      },
+    },
     "@fixture/sub": Object {
       "smallest": "1.0.1",
     },
+    "@fixture/subsub": Object {
+      "debug": "*",
+    },
+    "@fixture/subsubsub": Object {
+      "ansi-styles": "4.0.0",
+      "supports-color": "7.0.0",
+    },
   },
-  "integrity": "a6f45535ac6082d0e0067d9e02c168d69626bd6333c9aea6d38b0eadae0de14c",
+  "integrity": "9caacbd59c04019716d5d7e6793d0cb187bf4ec63576f83b44e8752907ff735a",
 }
 `;
 
@@ -70,33 +142,73 @@ Object {
         "location": "/Users/janbiasi/github/monopacker/test/fixtures/basic/packages/sub",
         "name": "@fixture/sub",
         "private": false,
-        "version": "0.1.0",
+        "version": "0.1.3",
+      },
+      Object {
+        "description": "",
+        "location": "/Users/janbiasi/github/monopacker/test/fixtures/basic/packages/subsub",
+        "name": "@fixture/subsub",
+        "private": false,
+        "version": "0.1.3",
+      },
+      Object {
+        "description": "",
+        "location": "/Users/janbiasi/github/monopacker/test/fixtures/basic/packages/subsubsub",
+        "name": "@fixture/subsubsub",
+        "private": false,
+        "version": "0.1.3",
       },
     ],
     "peer": Object {
+      "ansi-styles": "4.0.0",
+      "debug": "*",
       "smallest": "1.0.1",
+      "supports-color": "7.0.0",
     },
   },
   "graph": Object {
+    "@fixture/main": Object {
+      "external": Object {
+        "ansi-styles": "4.0.0",
+        "debug": "*",
+        "smallest": "1.0.1",
+        "supports-color": "7.0.0",
+      },
+      "internal": Object {
+        "@fixture/subsub": "0.1.3",
+        "@fixture/subsubsub": "0.1.3",
+      },
+    },
     "@fixture/sub": Object {
       "smallest": "1.0.1",
     },
+    "@fixture/subsub": Object {
+      "debug": "*",
+    },
+    "@fixture/subsubsub": Object {
+      "ansi-styles": "4.0.0",
+      "supports-color": "7.0.0",
+    },
   },
-  "integrity": "a6f45535ac6082d0e0067d9e02c168d69626bd6333c9aea6d38b0eadae0de14c",
+  "integrity": "9caacbd59c04019716d5d7e6793d0cb187bf4ec63576f83b44e8752907ff735a",
 }
 `;
 
 exports[`Packer Lerna should generate an artificial package correctly 1`] = `
 Object {
   "dependencies": Object {
+    "ansi-styles": "4.0.0",
     "debug": "*",
     "smallest": "1.0.1",
+    "supports-color": "7.0.0",
   },
   "description": "",
   "monopacker": Object {
-    "hash": "b2993282819eec66b266565a2f6d1b6283b85e836c4f4b932cfe28bfbf5d7498",
+    "hash": "71dc7dca170abde2eef34f44669583dc35d6254d2b12d71fb5a32c1cb38941c8",
     "linked": Object {
-      "@fixture/sub": "0.1.0",
+      "@fixture/sub": "0.1.3",
+      "@fixture/subsub": "0.1.3",
+      "@fixture/subsubsub": "0.1.3",
     },
     "version": "1.0.0",
   },
@@ -107,9 +219,11 @@ Object {
 
 exports[`Packer Lerna should generate correct metadata for the packed bundle 1`] = `
 Object {
-  "hash": "b2993282819eec66b266565a2f6d1b6283b85e836c4f4b932cfe28bfbf5d7498",
+  "hash": "71dc7dca170abde2eef34f44669583dc35d6254d2b12d71fb5a32c1cb38941c8",
   "linked": Object {
-    "@fixture/sub": "0.1.0",
+    "@fixture/sub": "0.1.3",
+    "@fixture/subsub": "0.1.3",
+    "@fixture/subsubsub": "0.1.3",
   },
   "version": "1.0.0",
 }

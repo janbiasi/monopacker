@@ -1,7 +1,11 @@
-import * as commander from 'commander';
+#!/usr/bin/env node
+'use strict';
+
 import { resolve } from 'path';
+import * as commander from 'commander';
 import { analyze, pack } from './commands';
 import { AdapterLerna } from '../adapter/Lerna';
+
 const program = new commander.Command();
 const sourcePkg = require('../../package.json');
 
@@ -68,7 +72,9 @@ program.on('command:*', () => {
 	process.exit(1);
 });
 
-program.parse(process.argv);
+(async () => {
+	program.parse(process.argv);
+})();
 
 // TEST: node -r ./node_modules/ts-node/register src/bin/monopacker-cli.ts pack packages/main --root ./test/fixtures/basic/ --noCache
 // TEST: node ./build/bin/monopacker-cli pack packages/main --root ./test/fixtures/basic/ -a nx

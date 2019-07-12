@@ -25,7 +25,7 @@ export interface IPackerOptions {
 	/**
 	 * Target for the packed app (root is cwd)
 	 */
-	target: string;
+	target?: string;
 	/**
 	 * Monorepository type, at the moment only lerna support.
 	 * Default: auto-detected

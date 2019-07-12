@@ -4,7 +4,10 @@ import { displayPath } from '../../utils';
 
 Packer;
 export async function analyze(cwd: string, source: string) {
-	const spinner = ora('Creating packer instance').start();
+	const spinner = ora('Creating packer instance');
+	spinner.frame();
+	spinner.start();
+
 	const packer = new Packer({
 		cwd,
 		source,

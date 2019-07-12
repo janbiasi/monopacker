@@ -1,4 +1,5 @@
 import { resolve, join, isAbsolute } from 'path';
+import debug from 'debug';
 import {
 	IPackerOptions,
 	Package,
@@ -42,6 +43,9 @@ export class Packer {
 	private analyticsCache = new WeakMap<IPackerOptions, IAnalytics>();
 	private packedPackageCache = new WeakMap<Packer, ArtificalPackage>();
 
+	// backups
+	private originalCwd = process.cwd();
+
 	constructor(private options: IPackerOptions) {
 		// create taper for packer
 		this.taper = new Taper(this, this.hooks);
@@ -58,10 +62,11 @@ export class Packer {
 		options.copy = options.copy ? neededCopySettings.concat(options.copy) : defaultCopySettings;
 		// enable debugging if needed
 		if (options.debug) {
-			this.taper.connect(new Taper(this, useDebugHooks(options)));
+			debug.enable('packer');
+			this.taper.stream(new Taper(this, useDebugHooks(options)));
 		}
 		// set current working directory to cwd
-		process.chdir(this.cwd);
+		process.chdir(isAbsolute(this.cwd) ? this.cwd : resolve(process.cwd()));
 		// tape initialization
 		this.taper.tap(HookPhase.INIT);
 	}
@@ -116,6 +121,15 @@ export class Packer {
 	}
 
 	/**
+	 * Subscribe to packer taper instance
+	 * @param {Taper<HookPhase, THooks>}
+	 * @typeparam THooks defines hook type
+	 */
+	public subscribe<THooks extends IPackerOptions['hooks']>(taper: Taper<HookPhase, Required<THooks>>) {
+		this.taper.stream(taper);
+	}
+
+	/**
 	 * Resolves a path in the defined cwd (options) if not absolute.
 	 * @param {string} partial
 	 */
@@ -143,6 +157,14 @@ export class Packer {
 	public async prepare(): Promise<void> {
 		await rimraf(this.options.target);
 		await fs.mkdirp(this.options.target);
+	}
+
+	/**
+	 * Resets the packer instance and environment
+	 */
+	public async teardown(): Promise<void> {
+		debug.disable();
+		process.chdir(this.originalCwd);
 	}
 
 	/**
@@ -306,6 +328,7 @@ export class Packer {
 			await this.taper.tap(HookPhase.POSTLINK, analytics.dependencies.internal);
 
 			// finalize
+			await this.teardown();
 			await this.taper.tap(HookPhase.PACKED, {
 				analytics,
 				copiedFiles,
