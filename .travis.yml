@@ -15,6 +15,7 @@ script:
 jobs:
   include:
     - stage: build
+      node_js: 10
       script: npm run build
     - stage: release
       node_js: lts/*
