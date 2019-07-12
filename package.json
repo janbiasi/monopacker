@@ -8,6 +8,7 @@
     "monopacker": "build/bin/monopacker-cli.js"
   },
   "scripts": {
+    "commit": "npx git-cz",
     "test": "jest",
     "prebuild": "rimraf build",
     "build": "tsc -p tsconfig.json",
