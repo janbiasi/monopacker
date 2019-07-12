@@ -1,6 +1,6 @@
 {
   "name": "monopacker",
-  "version": "0.1.16",
+  "version": "0.0.0-auto",
   "description": "A tool for managing builds of monorepo frontend projects with eg. lerna or similar tools.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -20,9 +20,23 @@
     "type": "git",
     "url": "git+https://github.com/janbiasi/monopacker.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "monorepository",
+    "monorepo",
+    "lerna",
+    "packer",
+    "pack",
+    "bundle",
+    "deploy",
+    "ci",
+    "tool",
+    "monopack",
+    "monopacker",
+    "nx",
+    "lerna"
+  ],
+  "author": "Jan Biasi <biasijan@gmail.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/janbiasi/monopacker/issues"
   },
