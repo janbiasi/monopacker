@@ -6,7 +6,7 @@ import * as fs from 'fs-extra';
 import * as glob from 'glob';
 import * as matcher from 'matcher';
 import { ncp } from 'ncp';
-import { DependenciesLike, LernaPackageList, Package, ILernaPackageListEntry } from './types';
+import { DependenciesLike, LernaPackageList, IAnalytics } from './types';
 
 export function rimraf(pathName: string, options: _rimraf.Options = {}): Promise<void> {
 	return new Promise((resolve, reject) => {
@@ -158,6 +158,16 @@ export function displayPath(base: string, toDisplay: string) {
 
 export function createHash(value: string) {
 	return createNativeHash('sha256').update(value).digest('hex')
+}
+
+export function createIntegrityHash(version: string, analytics: IAnalytics) {
+	return createHash(version + JSON.stringify({
+		...analytics,
+		dependencies: {
+			...analytics.dependencies,
+			internal: analytics.dependencies.internal.map(entry => `${entry.name}@${entry.version}|${!!entry.private}`)
+		}
+	}))
 }
 
 export const pkg = require('../package.json');

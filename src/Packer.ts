@@ -10,7 +10,7 @@ import {
 	ArtificalPackage,
 	IAnalyticsWithIntegrity
 } from './types';
-import { fs, asyncForEach, pkg, rimraf, copyDir, matcher, execa, displayPath, createHash } from './utils';
+import { fs, asyncForEach, pkg, rimraf, copyDir, matcher, execa, displayPath, createHash, createIntegrityHash } from './utils';
 import { Taper } from './Taper';
 import { AdapterLerna } from './adapter';
 import { useDebugHooks } from './helper/debug-hooks';
@@ -228,7 +228,7 @@ export class Packer {
 			const analytics = await this.adapter.analyze();
 
 			// set integrity hash for checks
-			(analytics as IAnalyticsWithIntegrity).integrity = createHash(Packer.version + JSON.stringify(analytics));
+			(analytics as IAnalyticsWithIntegrity).integrity = createIntegrityHash(Packer.version, analytics);
 
 			// tap and write analytics
 			await this.taper.tap(HookPhase.POSTANALYZE, {
@@ -265,7 +265,7 @@ export class Packer {
 				description: sourcePkg.description || '',
 				monopacker: {
 					// create unique hash out of the analytics
-					hash: createHash(Packer.version + JSON.stringify(analytics)),
+					hash: createIntegrityHash(Packer.version, analytics),
 					// reference packer version
 					version: Packer.version,
 					// common NPM tree out of lerna packages

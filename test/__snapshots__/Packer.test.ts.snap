@@ -57,11 +57,11 @@ Object {
       "supports-color": "7.0.0",
     },
   },
-  "integrity": "9b7401afee0e69a7b255b2c9e77d829aa023e68c71e4ff30694791ad62757e94",
+  "integrity": "b0a11c21c89cd3f3be5b3233a2d78be01ac2b8db7060e73c33d88af17383815a",
 }
 `;
 
-exports[`Packer Lerna should generate a hash for the packed bundle 1`] = `"de3c945615fd18040a760e9aca329fee9dba9e3dc23738ccbe01d02ab6535110"`;
+exports[`Packer Lerna should generate a hash for the packed bundle 1`] = `"054b9ea97c9f3b807703f5dd2ef6cf0d5d617788f6536993f0f307d71b856516"`;
 
 exports[`Packer Lerna should generate a monopacker.analytics.json file 1`] = `
 Object {
@@ -120,7 +120,7 @@ Object {
       "supports-color": "7.0.0",
     },
   },
-  "integrity": "9b7401afee0e69a7b255b2c9e77d829aa023e68c71e4ff30694791ad62757e94",
+  "integrity": "b0a11c21c89cd3f3be5b3233a2d78be01ac2b8db7060e73c33d88af17383815a",
 }
 `;
 
@@ -181,7 +181,7 @@ Object {
       "supports-color": "7.0.0",
     },
   },
-  "integrity": "9b7401afee0e69a7b255b2c9e77d829aa023e68c71e4ff30694791ad62757e94",
+  "integrity": "b0a11c21c89cd3f3be5b3233a2d78be01ac2b8db7060e73c33d88af17383815a",
 }
 `;
 
@@ -195,7 +195,7 @@ Object {
   },
   "description": "",
   "monopacker": Object {
-    "hash": "de3c945615fd18040a760e9aca329fee9dba9e3dc23738ccbe01d02ab6535110",
+    "hash": "054b9ea97c9f3b807703f5dd2ef6cf0d5d617788f6536993f0f307d71b856516",
     "linked": Object {
       "@fixture/sub": "0.1.3",
       "@fixture/subsub": "0.1.3",
@@ -210,7 +210,7 @@ Object {
 
 exports[`Packer Lerna should generate correct metadata for the packed bundle 1`] = `
 Object {
-  "hash": "de3c945615fd18040a760e9aca329fee9dba9e3dc23738ccbe01d02ab6535110",
+  "hash": "054b9ea97c9f3b807703f5dd2ef6cf0d5d617788f6536993f0f307d71b856516",
   "linked": Object {
     "@fixture/sub": "0.1.3",
     "@fixture/subsub": "0.1.3",
