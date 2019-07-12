@@ -60,11 +60,11 @@ Object {
       "supports-color": "7.0.0",
     },
   },
-  "integrity": "9caacbd59c04019716d5d7e6793d0cb187bf4ec63576f83b44e8752907ff735a",
+  "integrity": "9b7401afee0e69a7b255b2c9e77d829aa023e68c71e4ff30694791ad62757e94",
 }
 `;
 
-exports[`Packer Lerna should generate a hash for the packed bundle 1`] = `"71dc7dca170abde2eef34f44669583dc35d6254d2b12d71fb5a32c1cb38941c8"`;
+exports[`Packer Lerna should generate a hash for the packed bundle 1`] = `"de3c945615fd18040a760e9aca329fee9dba9e3dc23738ccbe01d02ab6535110"`;
 
 exports[`Packer Lerna should generate a monopacker.analytics.json file 1`] = `
 Object {
@@ -126,7 +126,7 @@ Object {
       "supports-color": "7.0.0",
     },
   },
-  "integrity": "9caacbd59c04019716d5d7e6793d0cb187bf4ec63576f83b44e8752907ff735a",
+  "integrity": "9b7401afee0e69a7b255b2c9e77d829aa023e68c71e4ff30694791ad62757e94",
 }
 `;
 
@@ -190,7 +190,7 @@ Object {
       "supports-color": "7.0.0",
     },
   },
-  "integrity": "9caacbd59c04019716d5d7e6793d0cb187bf4ec63576f83b44e8752907ff735a",
+  "integrity": "9b7401afee0e69a7b255b2c9e77d829aa023e68c71e4ff30694791ad62757e94",
 }
 `;
 
@@ -204,13 +204,13 @@ Object {
   },
   "description": "",
   "monopacker": Object {
-    "hash": "71dc7dca170abde2eef34f44669583dc35d6254d2b12d71fb5a32c1cb38941c8",
+    "hash": "de3c945615fd18040a760e9aca329fee9dba9e3dc23738ccbe01d02ab6535110",
     "linked": Object {
       "@fixture/sub": "0.1.3",
       "@fixture/subsub": "0.1.3",
       "@fixture/subsubsub": "0.1.3",
     },
-    "version": "1.0.0",
+    "version": "0.1.16",
   },
   "name": "@fixture/main-packed",
   "version": "0.2.7",
@@ -219,12 +219,12 @@ Object {
 
 exports[`Packer Lerna should generate correct metadata for the packed bundle 1`] = `
 Object {
-  "hash": "71dc7dca170abde2eef34f44669583dc35d6254d2b12d71fb5a32c1cb38941c8",
+  "hash": "de3c945615fd18040a760e9aca329fee9dba9e3dc23738ccbe01d02ab6535110",
   "linked": Object {
     "@fixture/sub": "0.1.3",
     "@fixture/subsub": "0.1.3",
     "@fixture/subsubsub": "0.1.3",
   },
-  "version": "1.0.0",
+  "version": "0.1.16",
 }
 `;
