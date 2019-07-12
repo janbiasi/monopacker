@@ -1,4 +1,4 @@
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/) [![Build Status](https://travis-ci.com/janbiasi/monopacker.svg?token=MXMxq8QRkbrDLive8EJ8&branch=master)](https://travis-ci.com/janbiasi/monopacker) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+[![Build Status](https://travis-ci.com/janbiasi/monopacker.svg?token=MXMxq8QRkbrDLive8EJ8&branch=master)](https://travis-ci.com/janbiasi/monopacker) [![npm version](https://badge.fury.io/js/monopacker.svg)](https://badge.fury.io/js/monopacker) [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)  [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 # monopacker
 A tool for managing builds of monorepo frontend projects with eg. lerna or similar tools. Developers who are working within 
