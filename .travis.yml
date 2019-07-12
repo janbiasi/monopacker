@@ -17,6 +17,7 @@ jobs:
     - stage: build
       node_js: 10
       script: npm run build
+      skip_cleanup: true
     - stage: release
       node_js: lts/*
       deploy:
@@ -25,4 +26,5 @@ jobs:
         provider: script
         skip_cleanup: true
         script:
+          - npm run build
           - npx semantic-release

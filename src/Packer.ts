@@ -31,7 +31,7 @@ const defaultCopySettings = [
 export const DEFAULT_PACKED_PATH = 'packed';
 
 export class Packer {
-	public static version: string = pkg.version;
+	public static version: string = '1';
 
 	// taping injection
 	private taper: Taper<HookPhase, Required<IPackerOptions['hooks']>>;
