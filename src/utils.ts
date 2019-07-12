@@ -118,10 +118,13 @@ export function getLernaPackages(root: string) {
 				const ref = resolve(relative(root, fname).replace(/[\\]+/g, '/'));
 				const isDuplicate = acc.filter(m => m.location === ref);
 
-				if (!isDuplicate.length) {
+				if (!isDuplicate.length && pkg) {
+					if (!pkg.name || !pkg.version) {
+						console.log(`Invalid package ${pkg.name || '<unknown>'} in ${ref}: name or version missing`);
+					}
 					acc.push({
 						name: pkg.name,
-						version: pkg.version,
+						version: pkg.version || '*',
 						description: pkg.description || '',
 						private: !!pkg.private,
 						location: ref
