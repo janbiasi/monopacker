@@ -139,8 +139,6 @@ export class AdapterLerna extends Adapter {
 				names
 			});
 
-			console.log('RRRRResult', internal, external, graph);
-
 			// aggregating and building graph for sub-modules
 			await asyncForEach(internal, async ({ location }) => {
 				const subPkg = await this.fetchPackage(`${location}/package.json`);
