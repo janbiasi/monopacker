@@ -3,13 +3,22 @@ node_js:
   - "8"
   - "10"
   - "12"
+
 cache: npm
+
 install:
   - npm install --save-dev
-script:
-  - npm run test
-  - npm run build
+
 jobs:
   include:
+    - stage: test
+      script: npm test
+    - stage: build
+      script: npm run build
     - stage: release
       node_js: lts/*
+      deploy:
+        provider: script
+        skip_cleanup: true
+        script:
+          - npx semantic-release
