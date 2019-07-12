@@ -1,7 +1,7 @@
 import { resolve, join } from 'path';
 import { Packer } from '../src/Packer';
 import { fs } from '../src/utils';
-import { HookPhase } from '../src/types';
+import { HookPhase, IAnalytics } from '../src/types';
 
 // hack to not provide this as option.cwd in packer ctor
 process.chdir(resolve(__dirname, 'fixtures/basic'));
@@ -15,19 +15,34 @@ const createTestPacker = (hooks?: Packer['hooks']) =>
 		hooks
 	});
 
+const analyticsToSnapshot = (analytics: IAnalytics) => {
+	return {
+		...analytics,
+		dependencies: {
+			...analytics.dependencies,
+			internal: analytics.dependencies.internal.map(entry => ({
+				name: entry.name,
+				version: entry.version,
+				description: entry.description,
+				private: entry.private
+			}))
+		}
+	}
+}
+
 describe('Packer', () => {
 	describe('Lerna', () => {
 		it('should aggregate any analytics', async () => {
 			const packer = createTestPacker();
 			const analytics = await packer.analyze();
 			expect(analytics).toBeDefined();
-			expect(analytics).toMatchSnapshot();
+			expect(analyticsToSnapshot(analytics)).toMatchSnapshot();
 		});
 
 		it('should generate a monopacker.analytics.json file', async () => {
 			const packer = createTestPacker();
 			const analytics = await packer.analyze();
-			expect(analytics).toMatchSnapshot();
+			expect(analyticsToSnapshot(analytics)).toMatchSnapshot();
 			const validateAnalyticsOutput = () => {
 				const contents = fs.readFileSync(resolve(TEMP, 'monopacker.analytics.json'), 'utf8');
 				expect(contents).toBeDefined();
@@ -39,7 +54,7 @@ describe('Packer', () => {
 				expect(contents).toBeDefined();
 				const deserialized = JSON.parse(contents);
 				expect(deserialized).toBeTruthy();
-				expect(deserialized).toMatchSnapshot();
+				expect(analyticsToSnapshot(deserialized)).toMatchSnapshot();
 				expect(deserialized.dependencies.external).toBeDefined();
 				expect(deserialized.dependencies.internal).toBeDefined();
 				expect(deserialized.dependencies.peer).toBeDefined();
