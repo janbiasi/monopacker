@@ -17,7 +17,6 @@ jobs:
     - stage: build
       node_js: 10
       script: npm run build
-      skip_cleanup: true
     - stage: release
       node_js: lts/*
       deploy:
