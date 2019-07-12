@@ -6,5 +6,11 @@ module.exports = {
 			tsConfig: 'tsconfig.test.json'
 		}
 	},
-	testPathIgnorePatterns: ['node_modules', 'temp', 'fixtures', 'build']
+	testPathIgnorePatterns: [
+		'<rootDir>/node_modules',
+		'<rootDir>/test/temp',
+		'<rootDir>/test/fixtures',
+		'<rootDir>/build',
+		'packed'
+	]
 };
