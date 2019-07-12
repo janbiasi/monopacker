@@ -9,10 +9,11 @@ cache: npm
 install:
   - npm install --save-dev
 
+script:
+  - npm run test
+
 jobs:
   include:
-    - stage: test
-      script: npm test
     - stage: build
       script: npm run build
     - stage: release
