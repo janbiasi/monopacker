@@ -14,7 +14,7 @@ This is not possible by default, but there's monopacker - a tool for generating 
 1. Aggregate all dependencies of the target application
 2. Detect which dependencies come from NPM and which are located in the repo
 3. Clone the target (only needed files, customizable) to the new target
-4. Create an artificial `package.json` with installable dependencies from the project, including the needed production dependencies from the internal dependencies (eg. main app (`A`) requires `B` and `B` requires `express` so express will also be a dependencies of the packed application, quite smart huh?)
+4. Create an artificial `package.json` with installable dependencies from the project, including the needed production dependencies from the internal dependencies (eg. main app (`A`) requires `B` and `B` requires `express` so express will also be a dependency of the packed application, quite smart huh?)
 5. Install all possible dependencies from NPM
 6. Copy all needed submodules to the packed target to "fake" the installation
 7. Done! Your application is ready to deploy individually as it is.
