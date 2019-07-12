@@ -5,7 +5,7 @@ node_js:
   - "12"
 cache: npm
 env:
-  - NODE_ENV=development
+  - NODE_ENV=test
 install:
   - npm install --save-dev
 script:
