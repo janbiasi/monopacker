@@ -63,7 +63,11 @@ export class AdapterLerna extends Adapter {
 	}
 
 	// aggregation of internal dependencies
-	private async resolveDependantInternals(graph: IAnalytics['graph'] = {}, sourcePackage: Package, lernaPackageInfo: ILernaPackageInfo): Promise<ILernaResolvedTree> {
+	private async resolveDependantInternals(
+		graph: IAnalytics['graph'] = {},
+		sourcePackage: Package,
+		lernaPackageInfo: ILernaPackageInfo
+	): Promise<ILernaResolvedTree> {
 		// aggregation of installable external dependencies
 		const productionDependencies = extractDependencies(sourcePackage.dependencies, dependency => {
 			return lernaPackageInfo.names.indexOf(dependency) === -1;
@@ -84,26 +88,37 @@ export class AdapterLerna extends Adapter {
 		});
 
 		// check if the related module(s) also need to be resolved and do so
-		const recuriveModules = await Promise.all<ILernaResolvedTree>(internalDependencies.map(async entry => {
-			const childModulePkg = await this.fetchPackage(resolve(entry.location, 'package.json'));
-			return await this.resolveDependantInternals(graph, childModulePkg, lernaPackageInfo);
-		}));
+		const recuriveModules = await Promise.all<ILernaResolvedTree>(
+			internalDependencies.map(async entry => {
+				const childModulePkg = await this.fetchPackage(resolve(entry.location, 'package.json'));
+				return await this.resolveDependantInternals(graph, childModulePkg, lernaPackageInfo);
+			})
+		);
 
 		// format recursive output according to type definition
-		const recursiveInternals = recuriveModules.reduce((prev, curr) => [...prev, ...curr.internal], [] as LernaPackageList)
-		const recursiveExternals = recuriveModules.reduce((prev, curr) => ({ ...prev, ...curr.external }), {} as DependenciesLike)
+		const recursiveInternals = recuriveModules.reduce(
+			(prev, curr) => [...prev, ...curr.internal],
+			[] as LernaPackageList
+		);
+		const recursiveExternals = recuriveModules.reduce(
+			(prev, curr) => ({ ...prev, ...curr.external }),
+			{} as DependenciesLike
+		);
 
 		// create resolved map
 		const resolved: Pick<ILernaResolvedTree, 'internal' | 'external'> = {
 			internal: internalDependencies.concat(recursiveInternals),
 			external: { ...productionDependencies, ...recursiveExternals }
-		}
+		};
 
 		// build related graph from recursive modules
 		graph[sourcePackage.name] = {
-			internal: recursiveInternals.reduce((prev, { name, version }) => ({ ...prev, [name]: version }), {} as DependenciesLike),
+			internal: recursiveInternals.reduce(
+				(prev, { name, version }) => ({ ...prev, [name]: version }),
+				{} as DependenciesLike
+			),
 			external: recursiveExternals
-		}
+		};
 
 		return {
 			...resolved,

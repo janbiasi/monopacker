@@ -104,5 +104,5 @@ export interface IAnalytics {
 }
 
 export interface IAnalyticsWithIntegrity extends IAnalytics {
-	integrity: string
+	integrity: string;
 }

@@ -11,7 +11,7 @@ export class Taper<K extends string, T extends Record<K, TaperFunction<unknown>[
 	private forwarder: TaperReceiver[] = [];
 	private connected: Taper<K, T>[] = [];
 
-	constructor(private packer: Packer, private factory: Partial<T>) { }
+	constructor(private packer: Packer, private factory: Partial<T>) {}
 
 	public on<TFeedback extends any = undefined>(point: K, taperFn: TaperFunction<TFeedback>) {
 		if (!this.factory[point]) {

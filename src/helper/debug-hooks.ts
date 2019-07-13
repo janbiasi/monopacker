@@ -1,7 +1,7 @@
 import * as debug from 'debug';
-import { IPackerOptions, HookPhase } from "../types";
-import { Packer, DEFAULT_PACKED_PATH } from "../Packer";
-import { countMsg, displayPath } from "../utils";
+import { IPackerOptions, HookPhase } from '../types';
+import { Packer, DEFAULT_PACKED_PATH } from '../Packer';
+import { countMsg, displayPath } from '../utils';
 
 const CWD = process.cwd();
 const log = debug('packer');
@@ -14,12 +14,7 @@ export function useDebugHooks(opts: Pick<IPackerOptions, 'target' | 'cwd' | 'sou
 	return {
 		[HookPhase.INIT]: [
 			async () => {
-				log(
-					`Initialized packer v${Packer.version} for ${displayPath(
-						opts.cwd || CWD,
-						opts.source
-					)}`
-				)
+				log(`Initialized packer v${Packer.version} for ${displayPath(opts.cwd || CWD, opts.source)}`);
 
 				log(`Setting packing output to ${opts.target || `${DEFAULT_PACKED_PATH} (default)`}`);
 			}
@@ -41,9 +36,7 @@ export function useDebugHooks(opts: Pick<IPackerOptions, 'target' | 'cwd' | 'sou
 					log('Skip writing analytics file to output');
 				}
 
-				log(
-					`Found ${countMsg(analytics.dependencies.external, 'external package')} to install via NPM`
-				);
+				log(`Found ${countMsg(analytics.dependencies.external, 'external package')} to install via NPM`);
 				log(`Found ${countMsg(analytics.dependencies.internal, 'internal package')} to copy`);
 				log(
 					`Found ${countMsg(analytics.dependencies.peer, 'aggregated peer package')} to include in production`
@@ -76,5 +69,5 @@ export function useDebugHooks(opts: Pick<IPackerOptions, 'target' | 'cwd' | 'sou
 				log(`Application ${artificalPackage.name} packed successfully!`);
 			}
 		]
-	}
+	};
 }

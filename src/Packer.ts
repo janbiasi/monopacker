@@ -10,7 +10,18 @@ import {
 	ArtificalPackage,
 	IAnalyticsWithIntegrity
 } from './types';
-import { fs, asyncForEach, pkg, rimraf, copyDir, matcher, execa, displayPath, createHash, createIntegrityHash } from './utils';
+import {
+	fs,
+	asyncForEach,
+	pkg,
+	rimraf,
+	copyDir,
+	matcher,
+	execa,
+	displayPath,
+	createHash,
+	createIntegrityHash
+} from './utils';
 import { Taper } from './Taper';
 import { AdapterLerna } from './adapter';
 import { useDebugHooks } from './helper/debug-hooks';

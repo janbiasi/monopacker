@@ -22,10 +22,7 @@ export async function pack(opts: IPackerOptions) {
 			init: [
 				async () => {
 					spinner.succeed(
-						`Initialized packer v${Packer.version} for ${displayPath(
-							opts.cwd || CWD,
-							opts.source
-						)}`
+						`Initialized packer v${Packer.version} for ${displayPath(opts.cwd || CWD, opts.source)}`
 					);
 
 					if (opts.cwd) {
@@ -57,7 +54,10 @@ export async function pack(opts: IPackerOptions) {
 					);
 					spinner.succeed(`Found ${countMsg(analytics.dependencies.internal, 'internal package')} to copy`);
 					spinner.succeed(
-						`Found ${countMsg(analytics.dependencies.peer, 'aggregated peer package')} to include in production`
+						`Found ${countMsg(
+							analytics.dependencies.peer,
+							'aggregated peer package'
+						)} to include in production`
 					);
 				}
 			],
@@ -70,7 +70,12 @@ export async function pack(opts: IPackerOptions) {
 			postinstall: [
 				async (_packer, { dependencies }) => {
 					const [installationTimeInSeconds] = process.hrtime(installTimer);
-					spinner.succeed(`Production packages have been installed (${countMsg(dependencies, 'package')} in ~${installationTimeInSeconds}s)`);
+					spinner.succeed(
+						`Production packages have been installed (${countMsg(
+							dependencies,
+							'package'
+						)} in ~${installationTimeInSeconds}s)`
+					);
 				}
 			],
 			prelink: [

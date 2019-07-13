@@ -27,8 +27,8 @@ const analyticsToSnapshot = (analytics: IAnalytics) => {
 				private: entry.private
 			}))
 		}
-	}
-}
+	};
+};
 
 describe('Packer', () => {
 	describe('Lerna', () => {
@@ -60,7 +60,7 @@ describe('Packer', () => {
 				expect(deserialized.dependencies.peer).toBeDefined();
 				expect(deserialized.dependencies.internal.length).toEqual(1);
 				expect(deserialized.dependencies.peer.smallest).toBeDefined();
-			} catch (err) { }
+			} catch (err) {}
 		});
 
 		it('should generate an artificial package correctly', async () => {
@@ -71,10 +71,10 @@ describe('Packer', () => {
 			expect(generatedPkg).toMatchSnapshot();
 			expect(generatedPkg.name).toEqual('@fixture/main-packed');
 			expect(generatedPkg.dependencies).toStrictEqual({
-				"ansi-styles": "4.0.0", // from subsub
+				'ansi-styles': '4.0.0', // from subsub
 				debug: '*', // from main
 				smallest: '1.0.1', // from sub
-				"supports-color": "7.0.0" // from subsubsub
+				'supports-color': '7.0.0' // from subsubsub
 			});
 		});
 
