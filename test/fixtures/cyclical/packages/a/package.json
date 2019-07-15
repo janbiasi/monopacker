@@ -1,0 +1,7 @@
+{
+  "name": "@fixture/cyclical-a",
+  "version": "1.0.0",
+  "dependencies": {
+    "@fixture/cyclical-b": "*"
+  }
+}

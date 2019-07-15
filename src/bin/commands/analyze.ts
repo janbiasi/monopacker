@@ -2,7 +2,6 @@ import { Packer } from '../../Packer';
 import ora from 'ora';
 import { displayPath } from '../../utils';
 
-Packer;
 export async function analyze(cwd: string, source: string) {
 	const spinner = ora('Creating packer instance');
 	spinner.frame();
