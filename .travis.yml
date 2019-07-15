@@ -9,6 +9,10 @@ os:
   - windows
   - linux
 
+matrix:
+  allow_failures:
+    - os: windows
+
 cache: npm
 
 install:
