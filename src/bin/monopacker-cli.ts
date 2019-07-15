@@ -3,7 +3,7 @@
 
 import { resolve } from 'path';
 import * as commander from 'commander';
-import { analyze, pack } from './commands';
+import { analyze, pack, validate } from './commands';
 import { AdapterLerna } from '../adapter/Lerna';
 
 const program = new commander.Command();
@@ -14,6 +14,22 @@ program
 	.option('-d, --debug', 'Enable debug mode', false)
 	.option('-v, --verbose', 'Silent mode', false)
 	.allowUnknownOption(false);
+
+program
+	.command('validate <source>')
+	.alias('v')
+	.description('Checks if a package is packable by resolving all packages theoretically')
+	.option('-r, --root <dir>', 'Set a custom root directory, default: process.cwd()', process.cwd())
+	.action(async (source, { root, verbose = false }) => {
+		await validate(resolve(root), source);
+	})
+	.on('--help', () => {
+		console.log('');
+		console.log('Examples:');
+		console.log('');
+		console.log('  $ monpacker validate ./packages/main');
+		console.log('  $ monopacker v packages/main');
+	});
 
 program
 	.command('analyze <source>')

@@ -2,15 +2,26 @@ import { resolve, join } from 'path';
 import { Packer } from '../src/Packer';
 import { fs } from '../src/utils';
 import { HookPhase, IAnalytics } from '../src/types';
+import { create } from 'istanbul-reports';
 
 // hack to not provide this as option.cwd in packer ctor
-process.chdir(resolve(__dirname, 'fixtures/basic'));
+const BASIC_CWD = resolve(__dirname, 'fixtures/basic');
+const cyclical_CWD = resolve(__dirname, 'fixtures/cyclical');
 
 const TEMP = resolve(__dirname, 'temp');
 
-const createTestPacker = (hooks?: Packer['hooks']) =>
+const createTestPackerForBasic = (hooks?: Packer['hooks']) =>
 	new Packer({
+		cwd: BASIC_CWD,
 		source: 'packages/main',
+		target: TEMP,
+		hooks
+	});
+
+const createTestPackerForcyclical = (hooks?: Packer['hooks']) =>
+	new Packer({
+		cwd: cyclical_CWD,
+		source: 'packages/a',
 		target: TEMP,
 		hooks
 	});
@@ -33,14 +44,15 @@ const analyticsToSnapshot = (analytics: IAnalytics) => {
 describe('Packer', () => {
 	describe('Lerna', () => {
 		it('should aggregate any analytics', async () => {
-			const packer = createTestPacker();
+			const packer = createTestPackerForBasic();
 			const analytics = await packer.analyze();
 			expect(analytics).toBeDefined();
+			console.log(JSON.stringify(analytics, null, 2));
 			expect(analyticsToSnapshot(analytics)).toMatchSnapshot();
 		});
 
 		it('should generate a monopacker.analytics.json file', async () => {
-			const packer = createTestPacker();
+			const packer = createTestPackerForBasic();
 			const analytics = await packer.analyze();
 			expect(analyticsToSnapshot(analytics)).toMatchSnapshot();
 			const validateAnalyticsOutput = () => {
@@ -64,7 +76,7 @@ describe('Packer', () => {
 		});
 
 		it('should generate an artificial package correctly', async () => {
-			const packer = createTestPacker();
+			const packer = createTestPackerForBasic();
 			await packer.pack();
 			const generatedPkg = require(join(TEMP, 'package.json'));
 			expect(generatedPkg).toBeTruthy();
@@ -79,7 +91,7 @@ describe('Packer', () => {
 		});
 
 		it('should copy the source files correctly', async () => {
-			const packer = createTestPacker();
+			const packer = createTestPackerForBasic();
 			await packer.pack();
 			const contents = require(join(TEMP, 'src', 'test.js'));
 			expect(contents).toEqual('Hello world');
@@ -87,7 +99,7 @@ describe('Packer', () => {
 
 		it('should copy sub-modules correctly', async () => {
 			const fakeHook = jest.fn(async () => Promise.resolve());
-			const packer = createTestPacker({
+			const packer = createTestPackerForBasic({
 				[HookPhase.INIT]: [fakeHook],
 				[HookPhase.PACKED]: [fakeHook],
 				[HookPhase.POSTANALYZE]: [fakeHook],
@@ -104,7 +116,7 @@ describe('Packer', () => {
 		});
 
 		it('should install all external modules', async () => {
-			const packer = createTestPacker();
+			const packer = createTestPackerForBasic();
 			await packer.pack();
 
 			const debugExists = await fs.pathExists(resolve(TEMP, 'node_modules', 'debug'));
@@ -121,7 +133,7 @@ describe('Packer', () => {
 		});
 
 		it('should install all internal modules', async () => {
-			const packer = createTestPacker();
+			const packer = createTestPackerForBasic();
 			await packer.pack();
 
 			const baseFolderExists = await fs.pathExists(resolve(TEMP, 'node_modules', '@fixture'));
@@ -136,7 +148,7 @@ describe('Packer', () => {
 		});
 
 		it('should generate correct metadata for the packed bundle', async () => {
-			const packer = createTestPacker();
+			const packer = createTestPackerForBasic();
 			await packer.pack();
 			const generatedPkg = require(join(TEMP, 'package.json'));
 			expect(generatedPkg).toBeDefined();
@@ -145,7 +157,7 @@ describe('Packer', () => {
 		});
 
 		it('should generate a hash for the packed bundle', async () => {
-			const packer = createTestPacker();
+			const packer = createTestPackerForBasic();
 			await packer.pack();
 			const generatedPkg = require(join(TEMP, 'package.json'));
 			expect(generatedPkg).toBeDefined();
@@ -153,6 +165,42 @@ describe('Packer', () => {
 			expect(generatedPkg.monopacker.hash).toBeDefined();
 			expect(generatedPkg.monopacker.hash.length).toBeGreaterThan(0);
 			expect(generatedPkg.monopacker.hash).toMatchSnapshot();
+		});
+
+		describe('cyclical dependencies', () => {
+			it.only('should detect endless cycles in dependencies', async () => {
+				const packer = createTestPackerForcyclical();
+				const willFailDueCyclical = async () => {
+					try {
+						await packer.validate();
+					} catch (err) {
+						throw new Error(err);
+					}
+				};
+
+				await expect(willFailDueCyclical()).rejects.toThrow(
+					'Error: @fixture/cyclical-a relies on @fixture/cyclical-b and vice versa, please fix this cyclical dependency'
+				);
+			});
+
+			it.only('should abort packing if detecting cyclical dependencies', async () => {
+				const fakePackedHook = jest.fn(() => Promise.resolve());
+				const packer = createTestPackerForcyclical({
+					[HookPhase.PACKED]: [fakePackedHook]
+				});
+				const willFailDueCyclical = async () => {
+					try {
+						await packer.pack();
+					} catch (err) {
+						throw new Error(err);
+					}
+				};
+
+				await expect(willFailDueCyclical()).rejects.toThrow(
+					'Error: @fixture/cyclical-a relies on @fixture/cyclical-b and vice versa, please fix this cyclical dependency'
+				);
+				expect(fakePackedHook).toHaveBeenCalledTimes(0);
+			});
 		});
 	});
 });

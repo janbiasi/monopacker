@@ -120,7 +120,9 @@ export function getLernaPackages(root: string) {
 
 				if (!isDuplicate.length && pkg && pkg !== null) {
 					if (!pkg.name || !pkg.version) {
-						console.log(`Invalid package ${pkg.name || '<unknown>'} in ${ref}: name or version missing`);
+						throw new Error(
+							`Invalid package ${pkg.name || '<unknown>'} in ${ref}: name or version missing`
+						);
 					}
 					acc.push({
 						name: pkg.name,
@@ -132,7 +134,7 @@ export function getLernaPackages(root: string) {
 				}
 			} catch (err) {
 				/* istanbul ignore next */
-				console.log(err);
+				throw err;
 			}
 			return acc;
 		},

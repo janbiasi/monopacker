@@ -8,6 +8,10 @@ interface ILernaPackageInfo {
 	names: string[];
 }
 
+interface ILernacyclicalGraph {
+	[name: string]: string[];
+}
+
 interface ILernaResolvedTree {
 	internal: LernaPackageList;
 	external: DependenciesLike;
@@ -58,11 +62,46 @@ export class AdapterLerna extends Adapter {
 		try {
 			return await this.fetchPackage(sourcePkgPath);
 		} catch (err) {
-			throw new Error(err.message);
+			throw err;
 		}
 	}
 
-	// aggregation of internal dependencies
+	/**
+	 * Detect possible cyclical dependencies which will lead to an error in
+	 * the pack and/or analyze step.
+	 */
+	private async findcyclicalDependencies(): Promise<void> {
+		const { names, packages } = await this.getLernaPackagesInfo();
+		const lernaPkgDefs = await Promise.all(
+			packages.map(async pkg => {
+				return await this.fetchPackage(resolve(pkg.location, 'package.json'));
+			})
+		);
+		const cyclicalGraph = lernaPkgDefs.reduce(
+			(prev, curr) => ({
+				...prev,
+				[curr.name]: Object.keys(extractDependencies(curr.dependencies, dep => names.indexOf(dep) > -1))
+			}),
+			{} as ILernacyclicalGraph
+		);
+
+		Object.keys(cyclicalGraph).forEach(packageEntry => {
+			const internalDeps = cyclicalGraph[packageEntry];
+			internalDeps.forEach(internalLinkedDependency => {
+				if (cyclicalGraph[internalLinkedDependency]) {
+					if (cyclicalGraph[internalLinkedDependency].indexOf(packageEntry) > -1) {
+						throw new Error(
+							`${packageEntry} relies on ${internalLinkedDependency} and vice versa, please fix this cyclical dependency`
+						);
+					}
+				}
+			});
+		});
+	}
+
+	/**
+	 * Recursive aggregation of internal dependencies
+	 */
 	private async resolveDependantInternals(
 		graph: IAnalytics['graph'] = {},
 		sourcePackage: Package,
@@ -113,7 +152,7 @@ export class AdapterLerna extends Adapter {
 
 		// build related graph from recursive modules
 		graph[sourcePackage.name] = {
-			internal: recursiveInternals.reduce(
+			internal: resolved.internal.reduce(
 				(prev, { name, version }) => ({ ...prev, [name]: version }),
 				{} as DependenciesLike
 			),
@@ -137,7 +176,31 @@ export class AdapterLerna extends Adapter {
 		}
 	}
 
+	/**
+	 * Pre-validation process
+	 */
+	public async validate() {
+		try {
+			await this.findcyclicalDependencies();
+			return { valid: true };
+		} catch (err) {
+			return {
+				valid: false,
+				message: `${err}`
+			};
+		}
+	}
+
+	/**
+	 * Main analytics process
+	 */
 	public async analyze(): Promise<IAnalytics> {
+		const { valid, message } = await this.validate();
+		if (!valid) {
+			throw new Error(message || `Invalid configuration found, check the docs for correct usage`);
+		}
+
+		// main analytics cycle
 		try {
 			const peer: DependenciesLike = {};
 			const rootGraph: IAnalytics['graph'] = {};
@@ -185,7 +248,7 @@ export class AdapterLerna extends Adapter {
 
 			return result;
 		} catch (err) {
-			throw new Error(`Failed to aggregate analytics: ${err.message}`);
+			throw err;
 		}
 	}
 }

@@ -159,7 +159,14 @@ export class Packer {
 		const sourceExists = await fs.pathExists(this.options.source);
 		const sourcePkgExists = await fs.pathExists(resolve(this.options.source, 'package.json'));
 
-		return sourceExists && sourcePkgExists;
+		const sourcesExists = sourceExists && sourcePkgExists;
+		const adapterValidationResult = await this.adapter.validate();
+
+		if (sourcesExists && adapterValidationResult.valid) {
+			return true;
+		}
+
+		throw adapterValidationResult.message || 'Invalid packer configuration';
 	}
 
 	/**
