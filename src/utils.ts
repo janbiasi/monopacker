@@ -112,10 +112,10 @@ export function getLernaPackages(root: string) {
 		(() => {
 			try {
 				return loadJson(`${root}/lerna.json`).packages;
-			} catch (err) {}
+			} catch (err) { }
 			try {
 				return loadJson(`${root}/package.json`).workspaces;
-			} catch (err) {}
+			} catch (err) { }
 			return [];
 		})() || [];
 
@@ -152,7 +152,7 @@ export function getLernaPackages(root: string) {
 				}
 			} catch (err) {
 				/* istanbul ignore next */
-				throw err;
+				throw err || 'Unable to list lerna modules';
 			}
 			return acc;
 		},
@@ -188,15 +188,15 @@ export function createHash(value: string) {
 export function createIntegrityHash(version: string, analytics: IAnalytics) {
 	return createHash(
 		version +
-			JSON.stringify({
-				...analytics,
-				dependencies: {
-					...analytics.dependencies,
-					internal: analytics.dependencies.internal.map(
-						entry => `${entry.name}@${entry.version}|${!!entry.private}`
-					)
-				}
-			})
+		JSON.stringify({
+			...analytics,
+			dependencies: {
+				...analytics.dependencies,
+				internal: analytics.dependencies.internal.map(
+					entry => `${entry.name}@${entry.version}|${!!entry.private}`
+				)
+			}
+		})
 	);
 }
 

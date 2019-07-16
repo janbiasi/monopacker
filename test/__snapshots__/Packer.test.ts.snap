@@ -53,6 +53,27 @@ Object {
 }
 `;
 
+exports[`Packer Lerna multitree dependencies should pack multitree apps correctly 1`] = `
+Object {
+  "dependencies": Object {
+    "ms": "2.1.2",
+    "smallest": "1.0.1",
+  },
+  "description": "",
+  "monopacker": Object {
+    "hash": "a1e8d10d61d9c191c853d7e797a7887f2ea8601414903b00587461e9f1e1a0e2",
+    "linked": Object {
+      "@fixture/multitree-a": "1.0.0",
+      "@fixture/multitree-ab": "1.0.0",
+      "@fixture/multitree-b": "1.0.0",
+    },
+    "version": "1",
+  },
+  "name": "@fixture/multitree-c-packed",
+  "version": "1.0.0",
+}
+`;
+
 exports[`Packer Lerna should aggregate any analytics 1`] = `
 Object {
   "dependencies": Object {

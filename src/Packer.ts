@@ -77,7 +77,11 @@ export class Packer {
 			this.taper.stream(new Taper(this, useDebugHooks(options)));
 		}
 		// set current working directory to cwd
-		process.chdir(isAbsolute(this.cwd) ? this.cwd : resolve(process.cwd()));
+		try {
+			process.chdir(isAbsolute(this.cwd) ? this.cwd : resolve(process.cwd()));
+		} catch (err) {
+			throw new Error(`Couldn't change to provided cwd (maybe not found): ${err.message}`);
+		}
 		// tape initialization
 		this.taper.tap(HookPhase.INIT);
 	}

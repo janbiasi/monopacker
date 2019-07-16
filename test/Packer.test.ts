@@ -8,6 +8,7 @@ const BASIC_CWD = resolve(__dirname, 'fixtures/basic');
 const CYCLICAL_CWD = resolve(__dirname, 'fixtures/circular');
 const MULTITREE_CWD = resolve(__dirname, 'fixtures/multitree');
 const DUPLICATES_CWD = resolve(__dirname, 'fixtures/duplicates');
+const SELF_CWD = resolve(__dirname, 'fixtures/self');
 const INVALID_CWD = resolve(__dirname, 'fixtures/duplicates');
 
 const createTestPackerFor = (cwd: string, source: string, hooks?: Packer['hooks']) =>
@@ -27,6 +28,9 @@ const createTestPackerForMultitree = (hooks?: Packer['hooks']) =>
 
 const createTestPackerForDuplicates = (hooks?: Packer['hooks']) =>
 	createTestPackerFor(DUPLICATES_CWD, 'packages/main', hooks);
+
+const createTestPackerForSelf = (hooks?: Packer['hooks']) =>
+	createTestPackerFor(SELF_CWD, 'packages/main', hooks);
 
 const createTestPackerToGalaxy = (hooks?: Packer['hooks']) =>
 	createTestPackerFor(INVALID_CWD, 'packages/does-not-exist', hooks);
@@ -257,7 +261,7 @@ describe('Packer', () => {
 				const analytics = await packer.analyze();
 				await packer.pack();
 				const generatedPkg = require(join(MULTITREE_CWD, 'temp', 'package.json'));
-
+				expect(generatedPkg).toMatchSnapshot();
 				expect(generatedPkg).toStrictEqual({
 					name: '@fixture/multitree-c-packed',
 					version: '1.0.0',
@@ -276,6 +280,16 @@ describe('Packer', () => {
 						ms: '2.1.2'
 					}
 				});
+			});
+		});
+
+		describe('self-referencing packages', () => {
+			// TODO: This fails ...
+			it.skip('should splice itself from the ref list', async () => {
+				const packer = createTestPackerForSelf();
+				const analytics = await packer.analyze(false);
+				expect(analyticsToSnapshot(analytics)).toMatchSnapshot();
+				expect(analytics.graph).toStrictEqual({});
 			});
 		});
 

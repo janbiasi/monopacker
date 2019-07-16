@@ -63,7 +63,7 @@ export class AdapterLerna extends Adapter {
 		try {
 			return await this.fetchPackage(sourcePkgPath);
 		} catch (err) {
-			throw err;
+			throw new Error('Could not fetch source package');
 		}
 	}
 
@@ -236,11 +236,11 @@ export class AdapterLerna extends Adapter {
 			const { packages, names } = await this.getLernaPackagesInfo();
 
 			// aggregation of installable external dependencies
-			const requiredProductionDeps = extractDependencies(sourcePkg.dependencies, dependency => {
+			const requiredDirectProductionDeps = extractDependencies(sourcePkg.dependencies, dependency => {
 				return names.indexOf(dependency) === -1;
 			});
 			// aggregation of internal dependencies
-			const { internal, external, graph } = await this.resolveDependantInternals(rootGraph, sourcePkg, {
+			const { internal /*, external*/, graph } = await this.resolveDependantInternals(rootGraph, sourcePkg, {
 				packages,
 				names
 			});
@@ -253,11 +253,9 @@ export class AdapterLerna extends Adapter {
 						// skip self
 						return false;
 					}
-
 					// skip internals atm.
 					return names.indexOf(dependency) === -1;
 				});
-
 				// building graph and peers
 				Object.assign(graph, {
 					[subPkg.name]: installablePeers
@@ -267,7 +265,7 @@ export class AdapterLerna extends Adapter {
 
 			const result = {
 				dependencies: {
-					external: requiredProductionDeps,
+					external: requiredDirectProductionDeps,
 					internal: internal,
 					peer
 				},
@@ -276,7 +274,7 @@ export class AdapterLerna extends Adapter {
 
 			return result;
 		} catch (err) {
-			throw err;
+			throw new Error(`${err || 'Analyzing failed'}`);
 		}
 	}
 }
