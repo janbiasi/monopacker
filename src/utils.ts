@@ -8,25 +8,6 @@ import * as matcher from 'matcher';
 import { ncp } from 'ncp';
 import { DependenciesLike, LernaPackageList, IAnalytics } from './types';
 
-export function findDuplicatesInArray<T extends string[] | number[]>(array: T) {
-	let object = {};
-	let result = [];
-
-	array.forEach(item => {
-		if (!object[item])
-			object[item] = 0;
-		object[item] += 1;
-	})
-
-	for (let prop in object) {
-		if (object[prop] >= 2) {
-			result.push(prop);
-		}
-	}
-
-	return result;
-}
-
 export function rimraf(pathName: string, options: _rimraf.Options = {}): Promise<void> {
 	return new Promise((resolve, reject) => {
 		_rimraf(pathName, options, err => {
@@ -113,10 +94,10 @@ export function getLernaPackages(root: string) {
 		(() => {
 			try {
 				return loadJson(`${root}/lerna.json`).packages;
-			} catch (err) { }
+			} catch (err) {}
 			try {
 				return loadJson(`${root}/package.json`).workspaces;
-			} catch (err) { }
+			} catch (err) {}
 			return [];
 		})() || [];
 
@@ -189,15 +170,15 @@ export function createHash(value: string) {
 export function createIntegrityHash(version: string, analytics: IAnalytics) {
 	return createHash(
 		version +
-		JSON.stringify({
-			...analytics,
-			dependencies: {
-				...analytics.dependencies,
-				internal: analytics.dependencies.internal.map(
-					entry => `${entry.name}@${entry.version}|${!!entry.private}`
-				)
-			}
-		})
+			JSON.stringify({
+				...analytics,
+				dependencies: {
+					...analytics.dependencies,
+					internal: analytics.dependencies.internal.map(
+						entry => `${entry.name}@${entry.version}|${!!entry.private}`
+					)
+				}
+			})
 	);
 }
 

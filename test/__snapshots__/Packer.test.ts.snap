@@ -1,58 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Packer Lerna multitree dependencies should analyze multitree dependencies correctly 1`] = `
-Object {
-  "dependencies": Object {
-    "external": Object {},
-    "internal": Array [
-      Object {
-        "description": "",
-        "name": "@fixture/multitree-ab",
-        "private": false,
-        "version": "1.0.0",
-      },
-      Object {
-        "description": "",
-        "name": "@fixture/multitree-a",
-        "private": false,
-        "version": "1.0.0",
-      },
-      Object {
-        "description": "",
-        "name": "@fixture/multitree-b",
-        "private": false,
-        "version": "1.0.0",
-      },
-    ],
-    "peer": Object {
-      "ms": "2.1.2",
-      "smallest": "1.0.1",
-    },
-  },
-  "graph": Object {
-    "@fixture/multitree-a": Object {
-      "smallest": "1.0.1",
-    },
-    "@fixture/multitree-ab": Object {},
-    "@fixture/multitree-b": Object {
-      "ms": "2.1.2",
-    },
-    "@fixture/multitree-c": Object {
-      "external": Object {
-        "ms": "2.1.2",
-        "smallest": "1.0.1",
-      },
-      "internal": Object {
-        "@fixture/multitree-a": "1.0.0",
-        "@fixture/multitree-ab": "1.0.0",
-        "@fixture/multitree-b": "1.0.0",
-      },
-    },
-  },
-  "integrity": "a1e8d10d61d9c191c853d7e797a7887f2ea8601414903b00587461e9f1e1a0e2",
-}
-`;
-
 exports[`Packer Lerna should aggregate any analytics 1`] = `
 Object {
   "dependencies": Object {
@@ -95,7 +42,6 @@ Object {
         "supports-color": "7.0.0",
       },
       "internal": Object {
-        "@fixture/sub": "0.1.3",
         "@fixture/subsub": "0.1.3",
         "@fixture/subsubsub": "0.1.3",
       },
@@ -111,11 +57,11 @@ Object {
       "supports-color": "7.0.0",
     },
   },
-  "integrity": "c47f8432f2003d16eaa5afe09720adf81ef7b7b45388e687e7f480c20829cf99",
+  "integrity": "8a42b2c1e3bb5a198e6b88e0631c105ad7cf0fd1038e3ac1dd6a744ff5c1800c",
 }
 `;
 
-exports[`Packer Lerna should generate a hash for the packed bundle 1`] = `"c47f8432f2003d16eaa5afe09720adf81ef7b7b45388e687e7f480c20829cf99"`;
+exports[`Packer Lerna should generate a hash for the packed bundle 1`] = `"428f6dc1324284aa66c723e6c962e58c4658a3d0de0d077492ca1945179a37a0"`;
 
 exports[`Packer Lerna should generate a monopacker.analytics.json file 1`] = `
 Object {
@@ -159,7 +105,6 @@ Object {
         "supports-color": "7.0.0",
       },
       "internal": Object {
-        "@fixture/sub": "0.1.3",
         "@fixture/subsub": "0.1.3",
         "@fixture/subsubsub": "0.1.3",
       },
@@ -175,7 +120,7 @@ Object {
       "supports-color": "7.0.0",
     },
   },
-  "integrity": "c47f8432f2003d16eaa5afe09720adf81ef7b7b45388e687e7f480c20829cf99",
+  "integrity": "8a42b2c1e3bb5a198e6b88e0631c105ad7cf0fd1038e3ac1dd6a744ff5c1800c",
 }
 `;
 
@@ -221,7 +166,6 @@ Object {
         "supports-color": "7.0.0",
       },
       "internal": Object {
-        "@fixture/sub": "0.1.3",
         "@fixture/subsub": "0.1.3",
         "@fixture/subsubsub": "0.1.3",
       },
@@ -237,7 +181,7 @@ Object {
       "supports-color": "7.0.0",
     },
   },
-  "integrity": "c47f8432f2003d16eaa5afe09720adf81ef7b7b45388e687e7f480c20829cf99",
+  "integrity": "8a42b2c1e3bb5a198e6b88e0631c105ad7cf0fd1038e3ac1dd6a744ff5c1800c",
 }
 `;
 
@@ -251,7 +195,7 @@ Object {
   },
   "description": "",
   "monopacker": Object {
-    "hash": "c47f8432f2003d16eaa5afe09720adf81ef7b7b45388e687e7f480c20829cf99",
+    "hash": "428f6dc1324284aa66c723e6c962e58c4658a3d0de0d077492ca1945179a37a0",
     "linked": Object {
       "@fixture/sub": "0.1.3",
       "@fixture/subsub": "0.1.3",
@@ -266,7 +210,7 @@ Object {
 
 exports[`Packer Lerna should generate correct metadata for the packed bundle 1`] = `
 Object {
-  "hash": "c47f8432f2003d16eaa5afe09720adf81ef7b7b45388e687e7f480c20829cf99",
+  "hash": "428f6dc1324284aa66c723e6c962e58c4658a3d0de0d077492ca1945179a37a0",
   "linked": Object {
     "@fixture/sub": "0.1.3",
     "@fixture/subsub": "0.1.3",

@@ -1,14 +1,14 @@
 import { join, resolve } from 'path';
 import { Adapter } from './Adapter';
-import { getLernaPackages, asyncForEach, extractDependencies, fs, findDuplicatesInArray } from '../utils';
-import { DependenciesLike, IAnalytics, Package, LernaPackageList } from '../types';
+import { getLernaPackages, asyncForEach, extractDependencies, fs } from '../utils';
+import { LernaPackageList, DependenciesLike, IAnalytics, Package } from '../types';
 
 interface ILernaPackageInfo {
 	packages: LernaPackageList;
 	names: string[];
 }
 
-interface ILernaCyclicalGraph {
+interface ILernacyclicalGraph {
 	[name: string]: string[];
 }
 
@@ -20,7 +20,6 @@ interface ILernaResolvedTree {
 
 export class AdapterLerna extends Adapter {
 	private packageCache = new Map<string, Package>();
-	private lernaPackagesCache = new Map<string, LernaPackageList>();
 
 	/**
 	 * Fetch required meta information for processing
@@ -71,7 +70,7 @@ export class AdapterLerna extends Adapter {
 	 * Detect possible cyclical dependencies which will lead to an error in
 	 * the pack and/or analyze step.
 	 */
-	private async findCyclicalDependencies(): Promise<void> {
+	private async findcyclicalDependencies(): Promise<void> {
 		const { names, packages } = await this.getLernaPackagesInfo();
 		const lernaPkgDefs = await Promise.all(
 			packages.map(async pkg => {
@@ -83,7 +82,7 @@ export class AdapterLerna extends Adapter {
 				...prev,
 				[curr.name]: Object.keys(extractDependencies(curr.dependencies, dep => names.indexOf(dep) > -1))
 			}),
-			{} as ILernaCyclicalGraph
+			{} as ILernacyclicalGraph
 		);
 
 		Object.keys(cyclicalGraph).forEach(packageEntry => {
@@ -170,14 +169,8 @@ export class AdapterLerna extends Adapter {
 	 * Fetch all lerna packages from the defined cwd
 	 */
 	public async getLernaPackages(): Promise<LernaPackageList> {
-		if (this.lernaPackagesCache.has(this.cwd)) {
-			return this.lernaPackagesCache.get(this.cwd);
-		}
-
 		try {
-			const res = await getLernaPackages(this.cwd);
-			this.lernaPackagesCache.set(this.cwd, res);
-			return res;
+			return await getLernaPackages(this.cwd);
 		} catch (err) {
 			throw new Error(`Failed to fetch lerna packages: ${err.message}`);
 		}
@@ -187,36 +180,15 @@ export class AdapterLerna extends Adapter {
 	 * Pre-validation process
 	 */
 	public async validate() {
-		// find duplicate package names
 		try {
-			const { names } = await this.getLernaPackagesInfo();
-			const duplicates = findDuplicatesInArray(names);
-
-			if (duplicates.length > 0) {
-				return {
-					valid: false,
-					message: `Duplicate package names found: ${duplicates.join(', ')}`
-				}
-			}
-		} catch (err) {
-			return {
-				valid: false,
-				message: `${err}`
-			}
-		}
-
-		// find any cyclical dependencies in the tree
-		try {
-			await this.findCyclicalDependencies();
+			await this.findcyclicalDependencies();
+			return { valid: true };
 		} catch (err) {
 			return {
 				valid: false,
 				message: `${err}`
 			};
 		}
-
-		// everything's fine
-		return { valid: true };
 	}
 
 	/**
