@@ -160,20 +160,24 @@ export class Packer {
 	 * Validates the current environment
 	 */
 	public async validate(): Promise<boolean> {
-		const sourceExists = await fs.pathExists(this.options.source);
-		const sourcePkgExists = await fs.pathExists(resolve(this.options.source, 'package.json'));
+		try {
+			const sourceExists = await fs.pathExists(this.options.source);
+			const sourcePkgExists = await fs.pathExists(resolve(this.options.source, 'package.json'));
 
-		const sourcesExists = sourceExists && sourcePkgExists;
-		if (!sourcesExists) {
-			throw `Missing sources, please check if ${this.options.source} and ${this.options.source}/package.json exists`;
+			const sourcesExists = sourceExists && sourcePkgExists;
+			if (!sourcesExists) {
+				throw `Missing sources, please check if ${this.options.source} and ${this.options.source}/package.json exists`;
+			}
+
+			const adapterValidationResult = await this.adapter.validate();
+			if (sourcesExists && adapterValidationResult.valid) {
+				return true;
+			}
+
+			throw adapterValidationResult.message || 'Invalid packer configuration';
+		} catch (err) {
+			throw err || 'Invalid packer configuration';
 		}
-
-		const adapterValidationResult = await this.adapter.validate();
-		if (sourcesExists && adapterValidationResult.valid) {
-			return true;
-		}
-
-		throw adapterValidationResult.message || 'Invalid packer configuration';
 	}
 
 	/**

@@ -29,8 +29,7 @@ const createTestPackerForMultitree = (hooks?: Packer['hooks']) =>
 const createTestPackerForDuplicates = (hooks?: Packer['hooks']) =>
 	createTestPackerFor(DUPLICATES_CWD, 'packages/main', hooks);
 
-const createTestPackerForSelf = (hooks?: Packer['hooks']) =>
-	createTestPackerFor(SELF_CWD, 'packages/main', hooks);
+const createTestPackerForSelf = (hooks?: Packer['hooks']) => createTestPackerFor(SELF_CWD, 'packages/main', hooks);
 
 const createTestPackerToGalaxy = (hooks?: Packer['hooks']) =>
 	createTestPackerFor(INVALID_CWD, 'packages/does-not-exist', hooks);
@@ -98,7 +97,7 @@ describe('Packer', () => {
 				expect(deserialized.dependencies.peer).toBeDefined();
 				expect(deserialized.dependencies.internal.length).toEqual(1);
 				expect(deserialized.dependencies.peer.smallest).toBeDefined();
-			} catch (err) { }
+			} catch (err) {}
 		});
 
 		it('should generate an artificial package correctly', async () => {
@@ -284,12 +283,18 @@ describe('Packer', () => {
 		});
 
 		describe('self-referencing packages', () => {
-			// TODO: This fails ...
-			it.skip('should splice itself from the ref list', async () => {
+			it('should splice itself from the ref list', async () => {
 				const packer = createTestPackerForSelf();
-				const analytics = await packer.analyze(false);
-				expect(analyticsToSnapshot(analytics)).toMatchSnapshot();
-				expect(analytics.graph).toStrictEqual({});
+				const willFailDueCircular = async () => {
+					try {
+						await packer.validate();
+					} catch (err) {
+						throw new Error(err);
+					}
+				};
+				await expect(willFailDueCircular()).rejects.toThrow(
+					'Error: @fixture/self-main relies on @fixture/self-main and vice versa, please fix this circular dependency'
+				);
 			});
 		});
 

@@ -115,7 +115,7 @@ export class AdapterLerna extends Adapter {
 		// aggregation of internal dependencies
 		const internalPackageNames = lernaPackageInfo.packages.map(pkg => pkg.name);
 		const requiredInternalDeps = extractDependencies(sourcePackage.dependencies, dependency => {
-			return internalPackageNames.indexOf(dependency) > -1;
+			return internalPackageNames.indexOf(dependency) > -1 && dependency !== sourcePackage.name;
 		});
 		const internalDependencyNames = Object.keys(requiredInternalDeps);
 		const internalDependencies = lernaPackageInfo.packages.filter(({ name }) => {
