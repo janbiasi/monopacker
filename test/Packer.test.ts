@@ -5,7 +5,7 @@ import { HookPhase, IAnalytics, IAnalyticsWithIntegrity } from '../src/types';
 
 // hack to not provide this as option.cwd in packer ctor
 const BASIC_CWD = resolve(__dirname, 'fixtures/basic');
-const CYCLICAL_CWD = resolve(__dirname, 'fixtures/cyclical');
+const CYCLICAL_CWD = resolve(__dirname, 'fixtures/circular');
 const MULTITREE_CWD = resolve(__dirname, 'fixtures/multitree');
 const DUPLICATES_CWD = resolve(__dirname, 'fixtures/duplicates');
 const INVALID_CWD = resolve(__dirname, 'fixtures/duplicates');
@@ -20,7 +20,7 @@ const createTestPackerFor = (cwd: string, source: string, hooks?: Packer['hooks'
 
 const createTestPackerForBasic = (hooks?: Packer['hooks']) => createTestPackerFor(BASIC_CWD, 'packages/main', hooks);
 
-const createTestPackerForcyclical = (hooks?: Packer['hooks']) => createTestPackerFor(CYCLICAL_CWD, 'packages/a', hooks);
+const createTestPackerForcircular = (hooks?: Packer['hooks']) => createTestPackerFor(CYCLICAL_CWD, 'packages/a', hooks);
 
 const createTestPackerForMultitree = (hooks?: Packer['hooks']) =>
 	createTestPackerFor(MULTITREE_CWD, 'packages/c', hooks);
@@ -94,7 +94,7 @@ describe('Packer', () => {
 				expect(deserialized.dependencies.peer).toBeDefined();
 				expect(deserialized.dependencies.internal.length).toEqual(1);
 				expect(deserialized.dependencies.peer.smallest).toBeDefined();
-			} catch (err) {}
+			} catch (err) { }
 		});
 
 		it('should generate an artificial package correctly', async () => {
@@ -189,10 +189,10 @@ describe('Packer', () => {
 			expect(generatedPkg.monopacker.hash).toMatchSnapshot();
 		});
 
-		describe('cyclical dependencies', () => {
+		describe('circular dependencies', () => {
 			it('should detect endless cycles in dependencies', async () => {
-				const packer = createTestPackerForcyclical();
-				const willFailDueCyclical = async () => {
+				const packer = createTestPackerForcircular();
+				const willFailDueCircular = async () => {
 					try {
 						await packer.validate();
 					} catch (err) {
@@ -200,17 +200,17 @@ describe('Packer', () => {
 					}
 				};
 
-				await expect(willFailDueCyclical()).rejects.toThrow(
-					'Error: @fixture/cyclical-a relies on @fixture/cyclical-b and vice versa, please fix this cyclical dependency'
+				await expect(willFailDueCircular()).rejects.toThrow(
+					'Error: @fixture/circular-a relies on @fixture/circular-b and vice versa, please fix this circular dependency'
 				);
 			});
 
-			it('should abort packing if detecting cyclical dependencies', async () => {
+			it('should abort packing if detecting circular dependencies', async () => {
 				const fakePackedHook = jest.fn(() => Promise.resolve());
-				const packer = createTestPackerForcyclical({
+				const packer = createTestPackerForcircular({
 					[HookPhase.PACKED]: [fakePackedHook]
 				});
-				const willFailDueCyclical = async () => {
+				const willFailDueCircular = async () => {
 					try {
 						await packer.pack();
 					} catch (err) {
@@ -218,8 +218,8 @@ describe('Packer', () => {
 					}
 				};
 
-				await expect(willFailDueCyclical()).rejects.toThrow(
-					'Error: @fixture/cyclical-a relies on @fixture/cyclical-b and vice versa, please fix this cyclical dependency'
+				await expect(willFailDueCircular()).rejects.toThrow(
+					'Error: @fixture/circular-a relies on @fixture/circular-b and vice versa, please fix this circular dependency'
 				);
 				expect(fakePackedHook).toHaveBeenCalledTimes(0);
 			});

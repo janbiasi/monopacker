@@ -8,7 +8,7 @@ interface ILernaPackageInfo {
 	names: string[];
 }
 
-interface ILernaCyclicalGraph {
+interface ILernaCircularGraph {
 	[name: string]: string[];
 }
 
@@ -68,31 +68,31 @@ export class AdapterLerna extends Adapter {
 	}
 
 	/**
-	 * Detect possible cyclical dependencies which will lead to an error in
+	 * Detect possible circular dependencies which will lead to an error in
 	 * the pack and/or analyze step.
 	 */
-	private async findCyclicalDependencies(): Promise<void> {
+	private async findCircularDependencies(): Promise<void> {
 		const { names, packages } = await this.getLernaPackagesInfo();
 		const lernaPkgDefs = await Promise.all(
 			packages.map(async pkg => {
 				return await this.fetchPackage(resolve(pkg.location, 'package.json'));
 			})
 		);
-		const cyclicalGraph = lernaPkgDefs.reduce(
+		const circularGraph = lernaPkgDefs.reduce(
 			(prev, curr) => ({
 				...prev,
 				[curr.name]: Object.keys(extractDependencies(curr.dependencies, dep => names.indexOf(dep) > -1))
 			}),
-			{} as ILernaCyclicalGraph
+			{} as ILernaCircularGraph
 		);
 
-		Object.keys(cyclicalGraph).forEach(packageEntry => {
-			const internalDeps = cyclicalGraph[packageEntry];
+		Object.keys(circularGraph).forEach(packageEntry => {
+			const internalDeps = circularGraph[packageEntry];
 			internalDeps.forEach(internalLinkedDependency => {
-				if (cyclicalGraph[internalLinkedDependency]) {
-					if (cyclicalGraph[internalLinkedDependency].indexOf(packageEntry) > -1) {
+				if (circularGraph[internalLinkedDependency]) {
+					if (circularGraph[internalLinkedDependency].indexOf(packageEntry) > -1) {
 						throw new Error(
-							`${packageEntry} relies on ${internalLinkedDependency} and vice versa, please fix this cyclical dependency`
+							`${packageEntry} relies on ${internalLinkedDependency} and vice versa, please fix this circular dependency`
 						);
 					}
 				}
@@ -205,9 +205,9 @@ export class AdapterLerna extends Adapter {
 			};
 		}
 
-		// find any cyclical dependencies in the tree
+		// find any circular dependencies in the tree
 		try {
-			await this.findCyclicalDependencies();
+			await this.findCircularDependencies();
 		} catch (err) {
 			return {
 				valid: false,
