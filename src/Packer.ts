@@ -160,8 +160,11 @@ export class Packer {
 		const sourcePkgExists = await fs.pathExists(resolve(this.options.source, 'package.json'));
 
 		const sourcesExists = sourceExists && sourcePkgExists;
-		const adapterValidationResult = await this.adapter.validate();
+		if (!sourcesExists) {
+			throw `Missing sources, please check if ${this.options.source} and ${this.options.source}/package.json exists`;
+		}
 
+		const adapterValidationResult = await this.adapter.validate();
 		if (sourcesExists && adapterValidationResult.valid) {
 			return true;
 		}
@@ -282,8 +285,8 @@ export class Packer {
 				version: sourcePkg.version || '0.0.0',
 				description: sourcePkg.description || '',
 				monopacker: {
-					// create unique hash out of the analytics
-					hash: createIntegrityHash(Packer.version, analytics),
+					// push hash for integrity checks
+					hash: (analytics as IAnalyticsWithIntegrity).integrity,
 					// reference packer version
 					version: Packer.version,
 					// common NPM tree out of lerna packages

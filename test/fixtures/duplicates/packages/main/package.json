@@ -1,0 +1,7 @@
+{
+  "name": "@fixture/duplicate-main",
+  "version": "1.0.0",
+  "dependencies": {
+    "@fixture/duplicate-a": "*"
+  }
+}
