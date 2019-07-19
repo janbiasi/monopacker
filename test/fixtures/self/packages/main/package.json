@@ -1,0 +1,7 @@
+{
+  "name": "@fixture/self-main",
+  "version": "1.0.0",
+  "dependencies": {
+    "@fixture/self-main": "*"
+  }
+}

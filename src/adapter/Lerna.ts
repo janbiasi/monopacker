@@ -1,14 +1,14 @@
 import { join, resolve } from 'path';
 import { Adapter } from './Adapter';
-import { getLernaPackages, asyncForEach, extractDependencies, fs } from '../utils';
-import { LernaPackageList, DependenciesLike, IAnalytics, Package } from '../types';
+import { getLernaPackages, asyncForEach, extractDependencies, fs, findDuplicatesInArray } from '../utils';
+import { DependenciesLike, IAnalytics, Package, LernaPackageList } from '../types';
 
 interface ILernaPackageInfo {
 	packages: LernaPackageList;
 	names: string[];
 }
 
-interface ILernacyclicalGraph {
+interface ILernaCircularGraph {
 	[name: string]: string[];
 }
 
@@ -20,6 +20,7 @@ interface ILernaResolvedTree {
 
 export class AdapterLerna extends Adapter {
 	private packageCache = new Map<string, Package>();
+	private lernaPackagesCache = new Map<string, LernaPackageList>();
 
 	/**
 	 * Fetch required meta information for processing
@@ -62,36 +63,36 @@ export class AdapterLerna extends Adapter {
 		try {
 			return await this.fetchPackage(sourcePkgPath);
 		} catch (err) {
-			throw err;
+			throw new Error('Could not fetch source package');
 		}
 	}
 
 	/**
-	 * Detect possible cyclical dependencies which will lead to an error in
+	 * Detect possible circular dependencies which will lead to an error in
 	 * the pack and/or analyze step.
 	 */
-	private async findcyclicalDependencies(): Promise<void> {
+	private async findCircularDependencies(): Promise<void> {
 		const { names, packages } = await this.getLernaPackagesInfo();
 		const lernaPkgDefs = await Promise.all(
 			packages.map(async pkg => {
 				return await this.fetchPackage(resolve(pkg.location, 'package.json'));
 			})
 		);
-		const cyclicalGraph = lernaPkgDefs.reduce(
+		const circularGraph = lernaPkgDefs.reduce(
 			(prev, curr) => ({
 				...prev,
 				[curr.name]: Object.keys(extractDependencies(curr.dependencies, dep => names.indexOf(dep) > -1))
 			}),
-			{} as ILernacyclicalGraph
+			{} as ILernaCircularGraph
 		);
 
-		Object.keys(cyclicalGraph).forEach(packageEntry => {
-			const internalDeps = cyclicalGraph[packageEntry];
+		Object.keys(circularGraph).forEach(packageEntry => {
+			const internalDeps = circularGraph[packageEntry];
 			internalDeps.forEach(internalLinkedDependency => {
-				if (cyclicalGraph[internalLinkedDependency]) {
-					if (cyclicalGraph[internalLinkedDependency].indexOf(packageEntry) > -1) {
+				if (circularGraph[internalLinkedDependency]) {
+					if (circularGraph[internalLinkedDependency].indexOf(packageEntry) > -1) {
 						throw new Error(
-							`${packageEntry} relies on ${internalLinkedDependency} and vice versa, please fix this cyclical dependency`
+							`${packageEntry} relies on ${internalLinkedDependency} and vice versa, please fix this circular dependency`
 						);
 					}
 				}
@@ -114,7 +115,7 @@ export class AdapterLerna extends Adapter {
 		// aggregation of internal dependencies
 		const internalPackageNames = lernaPackageInfo.packages.map(pkg => pkg.name);
 		const requiredInternalDeps = extractDependencies(sourcePackage.dependencies, dependency => {
-			return internalPackageNames.indexOf(dependency) > -1;
+			return internalPackageNames.indexOf(dependency) > -1 && dependency !== sourcePackage.name;
 		});
 		const internalDependencyNames = Object.keys(requiredInternalDeps);
 		const internalDependencies = lernaPackageInfo.packages.filter(({ name }) => {
@@ -169,8 +170,14 @@ export class AdapterLerna extends Adapter {
 	 * Fetch all lerna packages from the defined cwd
 	 */
 	public async getLernaPackages(): Promise<LernaPackageList> {
+		if (this.lernaPackagesCache.has(this.cwd)) {
+			return this.lernaPackagesCache.get(this.cwd);
+		}
+
 		try {
-			return await getLernaPackages(this.cwd);
+			const res = await getLernaPackages(this.cwd);
+			this.lernaPackagesCache.set(this.cwd, res);
+			return res;
 		} catch (err) {
 			throw new Error(`Failed to fetch lerna packages: ${err.message}`);
 		}
@@ -180,15 +187,36 @@ export class AdapterLerna extends Adapter {
 	 * Pre-validation process
 	 */
 	public async validate() {
+		// find duplicate package names
 		try {
-			await this.findcyclicalDependencies();
-			return { valid: true };
+			const { names } = await this.getLernaPackagesInfo();
+			const duplicates = findDuplicatesInArray(names);
+
+			if (duplicates.length > 0) {
+				return {
+					valid: false,
+					message: `Duplicate package names found: ${duplicates.join(', ')}`
+				};
+			}
 		} catch (err) {
 			return {
 				valid: false,
 				message: `${err}`
 			};
 		}
+
+		// find any circular dependencies in the tree
+		try {
+			await this.findCircularDependencies();
+		} catch (err) {
+			return {
+				valid: false,
+				message: `${err}`
+			};
+		}
+
+		// everything's fine
+		return { valid: true };
 	}
 
 	/**
@@ -208,11 +236,11 @@ export class AdapterLerna extends Adapter {
 			const { packages, names } = await this.getLernaPackagesInfo();
 
 			// aggregation of installable external dependencies
-			const requiredProductionDeps = extractDependencies(sourcePkg.dependencies, dependency => {
+			const requiredDirectProductionDeps = extractDependencies(sourcePkg.dependencies, dependency => {
 				return names.indexOf(dependency) === -1;
 			});
 			// aggregation of internal dependencies
-			const { internal, external, graph } = await this.resolveDependantInternals(rootGraph, sourcePkg, {
+			const { internal /*, external*/, graph } = await this.resolveDependantInternals(rootGraph, sourcePkg, {
 				packages,
 				names
 			});
@@ -225,11 +253,9 @@ export class AdapterLerna extends Adapter {
 						// skip self
 						return false;
 					}
-
 					// skip internals atm.
 					return names.indexOf(dependency) === -1;
 				});
-
 				// building graph and peers
 				Object.assign(graph, {
 					[subPkg.name]: installablePeers
@@ -239,7 +265,7 @@ export class AdapterLerna extends Adapter {
 
 			const result = {
 				dependencies: {
-					external: requiredProductionDeps,
+					external: requiredDirectProductionDeps,
 					internal: internal,
 					peer
 				},
@@ -248,7 +274,7 @@ export class AdapterLerna extends Adapter {
 
 			return result;
 		} catch (err) {
-			throw err;
+			throw new Error(`${err || 'Analyzing failed'}`);
 		}
 	}
 }

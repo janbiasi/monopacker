@@ -1,0 +1,8 @@
+{
+  "name": "@fixture/multitree-ab",
+  "version": "1.0.0",
+  "dependencies": {
+    "@fixture/multitree-a": "*",
+    "@fixture/multitree-b": "*"
+  }
+}

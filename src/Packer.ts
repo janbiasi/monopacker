@@ -77,7 +77,11 @@ export class Packer {
 			this.taper.stream(new Taper(this, useDebugHooks(options)));
 		}
 		// set current working directory to cwd
-		process.chdir(isAbsolute(this.cwd) ? this.cwd : resolve(process.cwd()));
+		try {
+			process.chdir(isAbsolute(this.cwd) ? this.cwd : resolve(process.cwd()));
+		} catch (err) {
+			throw new Error(`Couldn't change to provided cwd (maybe not found): ${err.message}`);
+		}
 		// tape initialization
 		this.taper.tap(HookPhase.INIT);
 	}
@@ -156,17 +160,24 @@ export class Packer {
 	 * Validates the current environment
 	 */
 	public async validate(): Promise<boolean> {
-		const sourceExists = await fs.pathExists(this.options.source);
-		const sourcePkgExists = await fs.pathExists(resolve(this.options.source, 'package.json'));
+		try {
+			const sourceExists = await fs.pathExists(this.options.source);
+			const sourcePkgExists = await fs.pathExists(resolve(this.options.source, 'package.json'));
 
-		const sourcesExists = sourceExists && sourcePkgExists;
-		const adapterValidationResult = await this.adapter.validate();
+			const sourcesExists = sourceExists && sourcePkgExists;
+			if (!sourcesExists) {
+				throw `Missing sources, please check if ${this.options.source} and ${this.options.source}/package.json exists`;
+			}
 
-		if (sourcesExists && adapterValidationResult.valid) {
-			return true;
+			const adapterValidationResult = await this.adapter.validate();
+			if (sourcesExists && adapterValidationResult.valid) {
+				return true;
+			}
+
+			throw adapterValidationResult.message || 'Invalid packer configuration';
+		} catch (err) {
+			throw err || 'Invalid packer configuration';
 		}
-
-		throw adapterValidationResult.message || 'Invalid packer configuration';
 	}
 
 	/**
@@ -282,8 +293,8 @@ export class Packer {
 				version: sourcePkg.version || '0.0.0',
 				description: sourcePkg.description || '',
 				monopacker: {
-					// create unique hash out of the analytics
-					hash: createIntegrityHash(Packer.version, analytics),
+					// push hash for integrity checks
+					hash: (analytics as IAnalyticsWithIntegrity).integrity,
 					// reference packer version
 					version: Packer.version,
 					// common NPM tree out of lerna packages
