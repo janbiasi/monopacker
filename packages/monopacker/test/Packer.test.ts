@@ -110,6 +110,7 @@ describe('Packer', () => {
 			expect(generatedPkg.dependencies).toStrictEqual({
 				'ansi-styles': '4.0.0', // from subsub
 				debug: '*', // from main
+				'monopacker-installer': '*', // auto-added
 				smallest: '1.0.1', // from sub
 				'supports-color': '7.0.0' // from subsubsub
 			});
@@ -136,11 +137,12 @@ describe('Packer', () => {
 				[HookPhase.PRECOPY]: [fakeHook],
 				[HookPhase.PREINSTALL]: [fakeHook]
 			});
+			// TODO: call time was 10 before, we removed install as default
 			await packer.pack();
-			expect(fakeHook).toBeCalledTimes(10);
+			expect(fakeHook).toBeCalledTimes(7);
 		});
 
-		it('should install all external modules', async () => {
+		it.skip('should install all external modules', async () => {
 			const packer = createTestPackerForBasic();
 			await packer.pack();
 
@@ -157,20 +159,24 @@ describe('Packer', () => {
 			expect(arrayExists).toBe(true);
 		});
 
-		it('should install all internal modules', async () => {
+		it.todo('should generate a valid repository file');
+
+		it.todo(
+			'should pack all internal modules to tarballs' /*, async () => {
 			const packer = createTestPackerForBasic();
 			await packer.pack();
 
-			const baseFolderExists = await fs.pathExists(resolve(BASIC_CWD, 'temp', 'node_modules', '@fixture'));
-			expect(baseFolderExists).toBe(true);
+			// const baseFolderExists = await fs.pathExists(resolve(BASIC_CWD, 'temp', 'node_modules', '@fixture'));
+			// expect(baseFolderExists).toBe(true);
 
-			const subModuleExists = await fs.pathExists(resolve(BASIC_CWD, 'temp', 'node_modules', '@fixture', 'sub'));
-			expect(subModuleExists).toBe(true);
+			// const subModuleExists = await fs.pathExists(resolve(BASIC_CWD, 'temp', 'node_modules', '@fixture', 'sub'));
+			// expect(subModuleExists).toBe(true);
 
-			expect(require(resolve(BASIC_CWD, 'temp', 'node_modules', '@fixture', 'sub', 'src', 'index.js'))).toEqual(
-				'Hello from sub'
-			);
-		});
+			// expect(require(resolve(BASIC_CWD, 'temp', 'node_modules', '@fixture', 'sub', 'src', 'index.js'))).toEqual(
+			// 	'Hello from sub'
+			// );
+		}*/
+		);
 
 		it('should generate correct metadata for the packed bundle', async () => {
 			const packer = createTestPackerForBasic();
@@ -265,6 +271,9 @@ describe('Packer', () => {
 					name: '@fixture/multitree-c-packed',
 					version: '1.0.0',
 					description: '',
+					scripts: {
+						postinstall: 'monopacker-installer'
+					},
 					monopacker: {
 						hash: (analytics as IAnalyticsWithIntegrity).integrity,
 						version: '1',
@@ -275,6 +284,7 @@ describe('Packer', () => {
 						}
 					},
 					dependencies: {
+						'monopacker-installer': '*',
 						smallest: '1.0.1',
 						ms: '2.1.2'
 					}

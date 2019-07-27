@@ -56,6 +56,7 @@ Object {
 exports[`Packer Lerna multitree dependencies should pack multitree apps correctly 1`] = `
 Object {
   "dependencies": Object {
+    "monopacker-installer": "*",
     "ms": "2.1.2",
     "smallest": "1.0.1",
   },
@@ -70,6 +71,9 @@ Object {
     "version": "1",
   },
   "name": "@fixture/multitree-c-packed",
+  "scripts": Object {
+    "postinstall": "monopacker-installer",
+  },
   "version": "1.0.0",
 }
 `;
@@ -267,6 +271,7 @@ Object {
   "dependencies": Object {
     "ansi-styles": "4.0.0",
     "debug": "*",
+    "monopacker-installer": "*",
     "smallest": "1.0.1",
     "supports-color": "7.0.0",
   },
@@ -281,6 +286,9 @@ Object {
     "version": "1",
   },
   "name": "@fixture/main-packed",
+  "scripts": Object {
+    "postinstall": "monopacker-installer",
+  },
   "version": "0.2.7",
 }
 `;

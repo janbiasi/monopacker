@@ -25,6 +25,7 @@ import {
 import { Taper } from './Taper';
 import { AdapterLerna } from './adapter';
 import { useDebugHooks } from './helper/debug-hooks';
+import { mkdirp } from 'fs-extra';
 
 const neededCopySettings = ['**', '!node_modules', '!package.json'];
 
@@ -259,6 +260,12 @@ export class Packer {
 			// set integrity hash for checks
 			(analytics as IAnalyticsWithIntegrity).integrity = createIntegrityHash(Packer.version, analytics);
 
+			// rewrite internal dependency paths to non-absolute
+			analytics.dependencies.internal = analytics.dependencies.internal.map(internalDep => ({
+				...internalDep,
+				location: internalDep.location.replace(this.options.cwd, '.')
+			}));
+
 			// tap and write analytics
 			await this.taper.tap(HookPhase.POSTANALYZE, {
 				analytics,
@@ -292,6 +299,9 @@ export class Packer {
 				name: `${sourcePkg.name}-packed`,
 				version: sourcePkg.version || '0.0.0',
 				description: sourcePkg.description || '',
+				scripts: {
+					postinstall: 'monopacker-installer'
+				},
 				monopacker: {
 					// push hash for integrity checks
 					hash: (analytics as IAnalyticsWithIntegrity).integrity,
@@ -308,7 +318,8 @@ export class Packer {
 				},
 				dependencies: {
 					...analytics.dependencies.external, // main prod. dependencies
-					...analytics.dependencies.peer // dependencies of submodules
+					...analytics.dependencies.peer, // dependencies of submodules
+					'monopacker-installer': '*'
 				}
 			};
 
@@ -343,17 +354,43 @@ export class Packer {
 			);
 
 			// install production dependencies
-			await this.taper.tap(HookPhase.PREINSTALL, artificalPackageInfo);
-			await this.runInTarget('npm', ['install']);
-			await this.taper.tap(HookPhase.POSTINSTALL, artificalPackageInfo);
+			// await this.taper.tap(HookPhase.PREINSTALL, artificalPackageInfo);
+			// await this.runInTarget('npm', ['install']);
+			// await this.taper.tap(HookPhase.POSTINSTALL, artificalPackageInfo);
 
 			// copy symlinked sub-modules
-			await this.taper.tap(HookPhase.PRELINK, analytics.dependencies.internal);
+			// await this.taper.tap(HookPhase.PRELINK, analytics.dependencies.internal);
+			// await asyncForEach(analytics.dependencies.internal, async lernaPkg => {
+			// 	const syntheticModulePath = resolve(this.options.target, 'node_modules', lernaPkg.name);
+			// 	await fs.mkdirp(syntheticModulePath);
+			// 	await copyDir(lernaPkg.location, syntheticModulePath);
+			// });
+
+			// pack all synthethic packages with the `npm pack` command
+			let nativeNpmPackedArchiveList: string[] = [];
+			let monopackerArchiveList: string[] = [];
 			await asyncForEach(analytics.dependencies.internal, async lernaPkg => {
-				const syntheticModulePath = resolve(this.options.target, 'node_modules', lernaPkg.name);
-				await fs.mkdirp(syntheticModulePath);
-				await copyDir(lernaPkg.location, syntheticModulePath);
+				const tarBundleName = await execa('npm', ['pack', lernaPkg.location]);
+				nativeNpmPackedArchiveList.push(tarBundleName.stdout);
 			});
+			// create .monopacker folder for npm packed dependencies
+			await mkdirp(resolve(this.options.target, '.monopacker'));
+			await asyncForEach(nativeNpmPackedArchiveList, async packedArchiveName => {
+				const tarArchivePath = resolve(this.options.cwd, packedArchiveName);
+				const targetTarArchivePath = resolve(this.options.target, '.monopacker', packedArchiveName);
+				monopackerArchiveList.push(targetTarArchivePath);
+				await fs.move(tarArchivePath, targetTarArchivePath); // copy tarball to .monopacker
+				await fs.remove(tarArchivePath); // remove old tarball
+			});
+			// write package definitions to a registry file
+			await fs.writeFile(
+				resolve(this.options.target, 'monopacker.registry.json'),
+				JSON.stringify(
+					monopackerArchiveList.map(archivePath => archivePath.replace(this.options.target, '.')),
+					null,
+					2
+				)
+			);
 			await this.taper.tap(HookPhase.POSTLINK, analytics.dependencies.internal);
 
 			// finalize

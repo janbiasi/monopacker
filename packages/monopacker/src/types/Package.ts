@@ -15,6 +15,9 @@ export interface ArtificalPackage {
 	name: string;
 	version: string;
 	description: string;
+	scripts?: {
+		[executable: string]: string;
+	};
 	monopacker: {
 		hash: string;
 		version: string;

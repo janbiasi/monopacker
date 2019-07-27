@@ -23,16 +23,19 @@ export interface IPackerOptions {
 	 */
 	source: string;
 	/**
-	 * Target for the packed app (root is cwd)
+	 * Enable to automatically install the packed project, default: false
+	 */
+	autoinstall?: boolean;
+	/**
+	 * Target for the packed app (root is cwd), default:
 	 */
 	target?: string;
 	/**
-	 * Monorepository type, at the moment only lerna support.
-	 * Default: auto-detected
+	 * Monorepository type, at the moment only lerna support, default: auto-detected
 	 */
 	type?: 'lerna' | 'nx';
 	/**
-	 * Enable or disable the cache, default is true (enabled)
+	 * Enable or disable the cache, default: true (enabled)
 	 */
 	cache?: boolean;
 	/**
@@ -50,7 +53,7 @@ export interface IPackerOptions {
 	 */
 	adapter?: IAdapterConstructable;
 	/**
-	 * Optional copy settings, defaults to `['**']`
+	 * Optional copy settings, default: `['**']`
 	 */
 	copy?: string[];
 	/**
@@ -58,7 +61,7 @@ export interface IPackerOptions {
 	 */
 	debug?: boolean;
 	/**
-	 * Define opt-in hooks for certain steps
+	 * Define opt-in hooks for certain steps, default: {}
 	 */
 	hooks?: Partial<{
 		[HookPhase.INIT]: Array<(packer: Packer) => Promise<any>>;

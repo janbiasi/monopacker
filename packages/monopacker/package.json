@@ -1,6 +1,5 @@
 {
-  "name": "monopacker-index",
-  "private": true,
+  "name": "monopacker",
   "version": "1.2.0",
   "description": "A tool for managing builds of monorepo frontend projects with eg. lerna or similar tools.",
   "main": "build/index.js",
@@ -9,17 +8,9 @@
     "monopacker": "build/bin/monopacker-cli.js"
   },
   "scripts": {
-    "clean": "npm-run-all clean:*",
-    "clean:modules": "rimraf node_modules",
-    "clean:build": "rimraf **/build",
-    "bootstrap": "npx lerna bootstrap --hoist",
-    "prebuild": "npm run clean",
-    "build": "lerna run build",
-    "test": "lerna run test",
-    "commit": "npx git-cz",
-    "prettier": "prettier --write \"**/*.{json,ts,js}\"",
-    "prerelease": "npm-run-all test build",
-    "release": "semantic-release"
+    "build": "tsc -p tsconfig.json",
+    "prebuild": "rimraf build",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -65,10 +56,8 @@
     "@types/ncp": "2.0.1",
     "@types/rimraf": "2.0.2",
     "jest": "24.8.0",
-    "lerna": "3.15.0",
+    "monopacker-installer": "*",
     "npm-run-all": "4.1.5",
-    "prettier": "1.18.2",
-    "semantic-release": "15.13.18",
     "ts-jest": "24.0.2",
     "ts-node": "8.3.0",
     "typescript": "3.5.2"
