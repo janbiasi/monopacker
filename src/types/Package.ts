@@ -28,3 +28,13 @@ export interface ArtificalPackage {
 		[name: string]: string;
 	};
 }
+
+export interface IInternalPackageEntry {
+	name: string;
+	description?: string;
+	version: string;
+	private: boolean;
+	location: string;
+}
+
+export type InternalPackageList = IInternalPackageEntry[];

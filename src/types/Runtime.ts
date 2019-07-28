@@ -1,7 +1,5 @@
-import { DependenciesLike, ArtificalPackage } from './Package';
-import { LernaPackageList } from './Lerna';
+import { DependenciesLike, ArtificalPackage, InternalPackageList } from './Package';
 import { IAdapterConstructable } from './Adapter';
-import { ILernaPackageListEntry } from './Lerna';
 import { Packer } from '../Packer';
 
 export enum HookPhase {
@@ -83,8 +81,8 @@ export interface IPackerOptions {
 		>;
 		[HookPhase.PRECOPY]: Array<(packer: Packer) => Promise<any>>;
 		[HookPhase.POSTCOPY]: Array<(packer: Packer, copiedFiles: string[]) => Promise<any>>;
-		[HookPhase.PRELINK]: Array<(packer: Packer, entries: ILernaPackageListEntry[]) => Promise<any>>;
-		[HookPhase.POSTLINK]: Array<(packer: Packer, entries: ILernaPackageListEntry[]) => Promise<any>>;
+		[HookPhase.PRELINK]: Array<(packer: Packer, entries: InternalPackageList) => Promise<any>>;
+		[HookPhase.POSTLINK]: Array<(packer: Packer, entries: InternalPackageList) => Promise<any>>;
 		[HookPhase.PREINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
 		[HookPhase.POSTINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
 		[HookPhase.PACKED]: Array<
@@ -102,7 +100,7 @@ export interface IPackerOptions {
 
 export interface IAnalytics {
 	dependencies: {
-		internal: LernaPackageList;
+		internal: InternalPackageList;
 		external: DependenciesLike;
 		peer: DependenciesLike;
 	};

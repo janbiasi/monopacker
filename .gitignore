@@ -72,3 +72,6 @@ build
 # test packed
 monopacked
 .monopacker
+
+# reports
+test-report.html

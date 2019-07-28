@@ -6,7 +6,7 @@ import * as fs from 'fs-extra';
 import * as glob from 'glob';
 import * as matcher from 'matcher';
 import { ncp } from 'ncp';
-import { DependenciesLike, LernaPackageList, IAnalytics } from './types';
+import { DependenciesLike, InternalPackageList, IAnalytics } from './types';
 
 export function findDuplicatesInArray<T extends string[] | number[]>(array: T) {
 	let object = {};
@@ -54,7 +54,7 @@ export function copyDir(
 	});
 }
 
-export async function getLernaPackages2(cwd: string): Promise<LernaPackageList> {
+export async function getLernaPackages2(cwd: string): Promise<InternalPackageList> {
 	const { stdout } = await execa('lerna', ['ls', '--all', '--json'], {
 		cwd
 	});
@@ -124,8 +124,8 @@ export function getLernaPackages(root: string) {
 		return acc.concat(found);
 	}, []);
 
-	const subModules: LernaPackageList = modules.reduce(
-		(acc, f): LernaPackageList => {
+	const subModules: InternalPackageList = modules.reduce(
+		(acc, f): InternalPackageList => {
 			try {
 				let fname = `${root}/${f}`;
 				const stat = fs.statSync(fname);
@@ -156,7 +156,7 @@ export function getLernaPackages(root: string) {
 			}
 			return acc;
 		},
-		[] as LernaPackageList
+		[] as InternalPackageList
 	);
 
 	return subModules;

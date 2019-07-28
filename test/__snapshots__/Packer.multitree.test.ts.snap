@@ -1,0 +1,78 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Packer Lerna multitree dependencies should analyze multitree dependencies correctly 1`] = `
+Object {
+  "dependencies": Object {
+    "external": Object {},
+    "internal": Array [
+      Object {
+        "description": "",
+        "name": "@fixture/multitree-ab",
+        "private": false,
+        "version": "1.0.0",
+      },
+      Object {
+        "description": "",
+        "name": "@fixture/multitree-a",
+        "private": false,
+        "version": "1.0.0",
+      },
+      Object {
+        "description": "",
+        "name": "@fixture/multitree-b",
+        "private": false,
+        "version": "1.0.0",
+      },
+    ],
+    "peer": Object {
+      "ms": "2.1.2",
+      "smallest": "1.0.1",
+    },
+  },
+  "graph": Object {
+    "@fixture/multitree-a": Object {
+      "smallest": "1.0.1",
+    },
+    "@fixture/multitree-ab": Object {},
+    "@fixture/multitree-b": Object {
+      "ms": "2.1.2",
+    },
+    "@fixture/multitree-c": Object {
+      "external": Object {
+        "ms": "2.1.2",
+        "smallest": "1.0.1",
+      },
+      "internal": Object {
+        "@fixture/multitree-a": "1.0.0",
+        "@fixture/multitree-ab": "1.0.0",
+        "@fixture/multitree-b": "1.0.0",
+      },
+    },
+  },
+  "integrity": "a1e8d10d61d9c191c853d7e797a7887f2ea8601414903b00587461e9f1e1a0e2",
+}
+`;
+
+exports[`Packer Lerna multitree dependencies should pack multitree apps correctly 1`] = `
+Object {
+  "dependencies": Object {
+    "ms": "2.1.2",
+    "smallest": "1.0.1",
+  },
+  "description": "",
+  "monopacker": Object {
+    "hash": "a1e8d10d61d9c191c853d7e797a7887f2ea8601414903b00587461e9f1e1a0e2",
+    "linked": Object {
+      "@fixture/multitree-a": "1.0.0",
+      "@fixture/multitree-ab": "1.0.0",
+      "@fixture/multitree-b": "1.0.0",
+    },
+    "version": "1",
+  },
+  "name": "@fixture/multitree-c-packed",
+  "scripts": Object {
+    "postinstall": "npm i --ignore-scripts ./.monopacker/fixture-multitree-ab-1.0.0.tgz ./.monopacker/fixture-multitree-a-1.0.0.tgz ./.monopacker/fixture-multitree-b-1.0.0.tgz",
+  },
+  "version": "1.0.0",
+}
+`;

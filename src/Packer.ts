@@ -335,9 +335,11 @@ export class Packer {
 					lernaPkg.name.replace('/', '-').replace('@', '')
 				);
 				await this.createPackableInternal(lernaPkg.location, tempPackedPath);
-				const tarBundleName = await execa('npm', ['pack', tempPackedPath]);
+				const { stdout } = await execa('npm', ['pack', tempPackedPath], {
+					maxBuffer: 200_000_000
+				});
 				await rimraf(tempPackedPath);
-				nativeNpmPackedArchiveList.push(tarBundleName.stdout);
+				nativeNpmPackedArchiveList.push(stdout);
 			});
 
 			await asyncForEach(nativeNpmPackedArchiveList, async packedArchiveName => {

@@ -1,0 +1,187 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Packer Lerna analytics should aggregate any analytics 1`] = `
+Object {
+  "dependencies": Object {
+    "external": Object {
+      "debug": "*",
+    },
+    "internal": Array [
+      Object {
+        "description": "",
+        "name": "@fixture/sub",
+        "private": false,
+        "version": "0.1.3",
+      },
+      Object {
+        "description": "",
+        "name": "@fixture/subsub",
+        "private": false,
+        "version": "0.1.3",
+      },
+      Object {
+        "description": "",
+        "name": "@fixture/subsubsub",
+        "private": false,
+        "version": "0.1.3",
+      },
+    ],
+    "peer": Object {
+      "ansi-styles": "4.0.0",
+      "debug": "*",
+      "smallest": "1.0.1",
+      "supports-color": "7.0.0",
+    },
+  },
+  "graph": Object {
+    "@fixture/main": Object {
+      "external": Object {
+        "ansi-styles": "4.0.0",
+        "debug": "*",
+        "smallest": "1.0.1",
+        "supports-color": "7.0.0",
+      },
+      "internal": Object {
+        "@fixture/sub": "0.1.3",
+        "@fixture/subsub": "0.1.3",
+        "@fixture/subsubsub": "0.1.3",
+      },
+    },
+    "@fixture/sub": Object {
+      "smallest": "1.0.1",
+    },
+    "@fixture/subsub": Object {
+      "debug": "*",
+    },
+    "@fixture/subsubsub": Object {
+      "ansi-styles": "4.0.0",
+      "supports-color": "7.0.0",
+    },
+  },
+  "integrity": "c47f8432f2003d16eaa5afe09720adf81ef7b7b45388e687e7f480c20829cf99",
+}
+`;
+
+exports[`Packer Lerna analytics should generate a monopacker.analytics.json file 1`] = `
+Object {
+  "dependencies": Object {
+    "external": Object {
+      "debug": "*",
+    },
+    "internal": Array [
+      Object {
+        "description": "",
+        "name": "@fixture/sub",
+        "private": false,
+        "version": "0.1.3",
+      },
+      Object {
+        "description": "",
+        "name": "@fixture/subsub",
+        "private": false,
+        "version": "0.1.3",
+      },
+      Object {
+        "description": "",
+        "name": "@fixture/subsubsub",
+        "private": false,
+        "version": "0.1.3",
+      },
+    ],
+    "peer": Object {
+      "ansi-styles": "4.0.0",
+      "debug": "*",
+      "smallest": "1.0.1",
+      "supports-color": "7.0.0",
+    },
+  },
+  "graph": Object {
+    "@fixture/main": Object {
+      "external": Object {
+        "ansi-styles": "4.0.0",
+        "debug": "*",
+        "smallest": "1.0.1",
+        "supports-color": "7.0.0",
+      },
+      "internal": Object {
+        "@fixture/sub": "0.1.3",
+        "@fixture/subsub": "0.1.3",
+        "@fixture/subsubsub": "0.1.3",
+      },
+    },
+    "@fixture/sub": Object {
+      "smallest": "1.0.1",
+    },
+    "@fixture/subsub": Object {
+      "debug": "*",
+    },
+    "@fixture/subsubsub": Object {
+      "ansi-styles": "4.0.0",
+      "supports-color": "7.0.0",
+    },
+  },
+  "integrity": "c47f8432f2003d16eaa5afe09720adf81ef7b7b45388e687e7f480c20829cf99",
+}
+`;
+
+exports[`Packer Lerna analytics should generate a monopacker.analytics.json file 2`] = `
+Object {
+  "dependencies": Object {
+    "external": Object {
+      "debug": "*",
+    },
+    "internal": Array [
+      Object {
+        "description": "",
+        "name": "@fixture/sub",
+        "private": false,
+        "version": "0.1.3",
+      },
+      Object {
+        "description": "",
+        "name": "@fixture/subsub",
+        "private": false,
+        "version": "0.1.3",
+      },
+      Object {
+        "description": "",
+        "name": "@fixture/subsubsub",
+        "private": false,
+        "version": "0.1.3",
+      },
+    ],
+    "peer": Object {
+      "ansi-styles": "4.0.0",
+      "debug": "*",
+      "smallest": "1.0.1",
+      "supports-color": "7.0.0",
+    },
+  },
+  "graph": Object {
+    "@fixture/main": Object {
+      "external": Object {
+        "ansi-styles": "4.0.0",
+        "debug": "*",
+        "smallest": "1.0.1",
+        "supports-color": "7.0.0",
+      },
+      "internal": Object {
+        "@fixture/sub": "0.1.3",
+        "@fixture/subsub": "0.1.3",
+        "@fixture/subsubsub": "0.1.3",
+      },
+    },
+    "@fixture/sub": Object {
+      "smallest": "1.0.1",
+    },
+    "@fixture/subsub": Object {
+      "debug": "*",
+    },
+    "@fixture/subsubsub": Object {
+      "ansi-styles": "4.0.0",
+      "supports-color": "7.0.0",
+    },
+  },
+  "integrity": "c47f8432f2003d16eaa5afe09720adf81ef7b7b45388e687e7f480c20829cf99",
+}
+`;
