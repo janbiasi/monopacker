@@ -1,0 +1,7 @@
+{
+  "name": "@fixture/circular-b",
+  "version": "1.0.0",
+  "dependencies": {
+    "@fixture/circular-a": "*"
+  }
+}

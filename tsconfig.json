@@ -2,8 +2,8 @@
 	"compilerOptions": {
 		"target": "es5",
 		"module": "commonjs",
-		"rootDir": "./src",
 		"outDir": "build",
+		"rootDir": "./src",
 		"baseUrl": ".",
 		"moduleResolution": "node",
 		"declaration": true,

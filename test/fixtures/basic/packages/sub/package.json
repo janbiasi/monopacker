@@ -1,0 +1,9 @@
+{
+  "name": "@fixture/sub",
+  "version": "0.1.3",
+  "main": "./index.js",
+  "dependencies": {
+    "smallest": "1.0.1",
+    "@fixture/subsub": "0.1.0"
+  }
+}

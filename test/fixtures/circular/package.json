@@ -1,0 +1,6 @@
+{
+  "name": "fixture-circular",
+  "devDependencies": {
+    "lerna": "3.15.0"
+  }
+}
