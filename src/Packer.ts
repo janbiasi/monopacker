@@ -1,4 +1,5 @@
-import { resolve, join, isAbsolute, basename } from 'path';
+import { resolve, join, isAbsolute } from 'path';
+import { compile } from 'ejs';
 import debug from 'debug';
 import {
 	IPackerOptions,
@@ -29,7 +30,9 @@ const defaultCopySettings = [
 	'!tsconfig*.json'
 ];
 
-export const DEFAULT_PACKED_PATH = 'packed';
+export const DEFAULT_PACKED_PATH = 'monopacked';
+
+const MONOPACKER_INSTALLER_TEMPLATE = resolve(__dirname, 'templates', 'monopacker.installer.ejs');
 
 export class Packer {
 	public static version: string = '1';
@@ -276,9 +279,7 @@ export class Packer {
 				name: `${sourcePkg.name}-packed`,
 				version: sourcePkg.version || '0.0.0',
 				description: sourcePkg.description || '',
-				scripts: {
-					postinstall: 'echo "No monopacker packages to install"'
-				},
+				scripts: sourcePkg.scripts || {},
 				monopacker: {
 					// push hash for integrity checks
 					hash: (analytics as IAnalyticsWithIntegrity).integrity,
@@ -323,19 +324,6 @@ export class Packer {
 			});
 			await this.taper.tap(HookPhase.POSTCOPY, copiedFiles);
 
-			// install production dependencies
-			// await this.taper.tap(HookPhase.PREINSTALL, artificalPackageInfo);
-			// await this.runInTarget('npm', ['install']);
-			// await this.taper.tap(HookPhase.POSTINSTALL, artificalPackageInfo);
-
-			// copy symlinked sub-modules
-			// await this.taper.tap(HookPhase.PRELINK, analytics.dependencies.internal);
-			// await asyncForEach(analytics.dependencies.internal, async lernaPkg => {
-			// 	const syntheticModulePath = resolve(this.options.target, 'node_modules', lernaPkg.name);
-			// 	await fs.mkdirp(syntheticModulePath);
-			// 	await copyDir(lernaPkg.location, syntheticModulePath);
-			// });
-
 			// pack all synthethic packages with the `npm pack` command
 			let nativeNpmPackedArchiveList: string[] = [];
 			let monopackerArchiveList: string[] = [];
@@ -376,8 +364,34 @@ export class Packer {
 
 			// create postinstall script for package tarballs
 			if (monopackerArchiveList) {
-				artificalPackageInfo.scripts = artificalPackageInfo.scripts || {};
-				artificalPackageInfo.scripts.postinstall = `npm i --no-scripts ${monopackerArchiveList.join(' ')}`;
+				let installerScriptContent: string;
+
+				if (this.options.createInstaller) {
+					const installerTemplate = await fs.readFile(MONOPACKER_INSTALLER_TEMPLATE, 'utf-8');
+					const installerCompiler = compile(installerTemplate, {
+						async: true,
+						cache: true
+					});
+					const installerContents = await installerCompiler({
+						packages: monopackerArchiveList
+					});
+					await fs.writeFile(resolve(this.options.target, 'monopacker.installer.js'), installerContents);
+					installerScriptContent = 'node ./monopacker.installer.js';
+				} else {
+					installerScriptContent = `npm i --ignore-scripts ${monopackerArchiveList.join(' ')}`;
+				}
+
+				if (artificalPackageInfo.scripts.postinstall && artificalPackageInfo.scripts.preinstall) {
+					// send an info if both scripts are blocked by the user
+					console.log('Warning: pre- and postinstall package scripts are already in use,');
+					console.log('         please make sure you provide your own strategy for installation.');
+				} else if (artificalPackageInfo.scripts.postinstall && !artificalPackageInfo.scripts.preinstall) {
+					// we use pre-install if post-install is already in use
+					artificalPackageInfo.scripts.preinstall = installerScriptContent;
+				} else if (!artificalPackageInfo.scripts.postinstall) {
+					// we use post-install if available
+					artificalPackageInfo.scripts.postinstall = installerScriptContent;
+				}
 			}
 
 			// create artificial target package.json
@@ -398,6 +412,4 @@ export class Packer {
 			throw err;
 		}
 	}
-
-	public async createPostinstaller(packagTarballPaths: string[]) {}
 }

@@ -1,0 +1,21 @@
+{
+  "name": "@fixture/multitree-c-packed",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "postinstall": "npm i --ingore-scripts ./.monopacker/fixture-multitree-ab-1.0.0.tgz ./.monopacker/fixture-multitree-a-1.0.0.tgz ./.monopacker/fixture-multitree-b-1.0.0.tgz"
+  },
+  "monopacker": {
+    "hash": "a1e8d10d61d9c191c853d7e797a7887f2ea8601414903b00587461e9f1e1a0e2",
+    "version": "1",
+    "linked": {
+      "@fixture/multitree-ab": "1.0.0",
+      "@fixture/multitree-a": "1.0.0",
+      "@fixture/multitree-b": "1.0.0"
+    }
+  },
+  "dependencies": {
+    "smallest": "1.0.1",
+    "ms": "2.1.2"
+  }
+}

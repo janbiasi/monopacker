@@ -8,9 +8,9 @@ module.exports = {
 	},
 	testPathIgnorePatterns: [
 		'<rootDir>/node_modules',
-		'<rootDir>/test/temp',
 		'<rootDir>/test/fixtures',
 		'<rootDir>/build',
-		'packed'
+		'temp',
+		'monopacked'
 	]
 };

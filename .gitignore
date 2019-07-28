@@ -70,5 +70,5 @@ packages/**/temp
 build
 
 # test packed
-packed
+monopacked
 .monopacker

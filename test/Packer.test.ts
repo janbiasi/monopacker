@@ -278,7 +278,7 @@ describe('Packer', () => {
 					description: '',
 					scripts: {
 						postinstall:
-							'npm i --no-scripts ./.monopacker/fixture-multitree-ab-1.0.0.tgz ./.monopacker/fixture-multitree-a-1.0.0.tgz ./.monopacker/fixture-multitree-b-1.0.0.tgz'
+							'npm i --ignore-scripts ./.monopacker/fixture-multitree-ab-1.0.0.tgz ./.monopacker/fixture-multitree-a-1.0.0.tgz ./.monopacker/fixture-multitree-b-1.0.0.tgz'
 					},
 					monopacker: {
 						hash: (analytics as IAnalyticsWithIntegrity).integrity,

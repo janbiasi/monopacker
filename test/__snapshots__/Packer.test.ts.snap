@@ -71,7 +71,7 @@ Object {
   },
   "name": "@fixture/multitree-c-packed",
   "scripts": Object {
-    "postinstall": "npm i --no-scripts ./.monopacker/fixture-multitree-ab-1.0.0.tgz ./.monopacker/fixture-multitree-a-1.0.0.tgz ./.monopacker/fixture-multitree-b-1.0.0.tgz",
+    "postinstall": "npm i --ingore-scripts ./.monopacker/fixture-multitree-ab-1.0.0.tgz ./.monopacker/fixture-multitree-a-1.0.0.tgz ./.monopacker/fixture-multitree-b-1.0.0.tgz",
   },
   "version": "1.0.0",
 }
@@ -285,7 +285,7 @@ Object {
   },
   "name": "@fixture/main-packed",
   "scripts": Object {
-    "postinstall": "npm i --no-scripts ./.monopacker/fixture-sub-0.1.3.tgz ./.monopacker/fixture-subsub-0.1.3.tgz ./.monopacker/fixture-subsubsub-0.1.3.tgz",
+    "postinstall": "npm i --ingore-scripts ./.monopacker/fixture-sub-0.1.3.tgz ./.monopacker/fixture-subsub-0.1.3.tgz ./.monopacker/fixture-subsubsub-0.1.3.tgz",
   },
   "version": "0.2.7",
 }

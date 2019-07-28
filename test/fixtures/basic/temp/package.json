@@ -1,0 +1,23 @@
+{
+  "name": "@fixture/main-packed",
+  "version": "0.2.7",
+  "description": "",
+  "scripts": {
+    "postinstall": "npm i --ingore-scripts ./.monopacker/fixture-sub-0.1.3.tgz ./.monopacker/fixture-subsub-0.1.3.tgz ./.monopacker/fixture-subsubsub-0.1.3.tgz"
+  },
+  "monopacker": {
+    "hash": "c47f8432f2003d16eaa5afe09720adf81ef7b7b45388e687e7f480c20829cf99",
+    "version": "1",
+    "linked": {
+      "@fixture/sub": "0.1.3",
+      "@fixture/subsub": "0.1.3",
+      "@fixture/subsubsub": "0.1.3"
+    }
+  },
+  "dependencies": {
+    "debug": "*",
+    "smallest": "1.0.1",
+    "ansi-styles": "4.0.0",
+    "supports-color": "7.0.0"
+  }
+}

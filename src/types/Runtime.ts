@@ -61,6 +61,11 @@ export interface IPackerOptions {
 	 */
 	debug?: boolean;
 	/**
+	 * Decide if you want an installer file (`monopacker.installer.js`)
+	 * as postinstall process or not
+	 */
+	createInstaller?: boolean;
+	/**
 	 * Define opt-in hooks for certain steps, default: {}
 	 */
 	hooks?: Partial<{
