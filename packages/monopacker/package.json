@@ -10,6 +10,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prebuild": "rimraf build",
+    "pretest": "rimraf ./test/**/*.gz ./test/**/.temp",
     "test": "jest"
   },
   "repository": {

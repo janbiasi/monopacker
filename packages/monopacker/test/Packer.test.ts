@@ -81,13 +81,19 @@ describe('Packer', () => {
 			const analytics = await packer.analyze();
 			expect(analyticsToSnapshot(analytics)).toMatchSnapshot();
 			const validateAnalyticsOutput = () => {
-				const contents = fs.readFileSync(resolve(BASIC_CWD, 'temp', 'monopacker.analytics.json'), 'utf8');
+				const contents = fs.readFileSync(
+					resolve(BASIC_CWD, 'temp', '.monopacker', 'monopacker.analytics.json'),
+					'utf8'
+				);
 				expect(contents).toBeDefined();
 			};
 			expect(validateAnalyticsOutput).not.toThrow();
 			validateAnalyticsOutput();
 			try {
-				const contents = fs.readFileSync(resolve(BASIC_CWD, 'temp', 'monopacker.analytics.json'), 'utf8');
+				const contents = fs.readFileSync(
+					resolve(BASIC_CWD, 'temp', '.monopacker', 'monopacker.analytics.json'),
+					'utf8'
+				);
 				expect(contents).toBeDefined();
 				const deserialized = JSON.parse(contents);
 				expect(deserialized).toBeTruthy();
