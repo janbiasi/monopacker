@@ -1,13 +1,20 @@
-[![Build Status](https://travis-ci.com/janbiasi/monopacker.svg?token=MXMxq8QRkbrDLive8EJ8&branch=master)](https://travis-ci.com/janbiasi/monopacker) [![npm version](https://badge.fury.io/js/monopacker.svg)](https://badge.fury.io/js/monopacker) [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)  [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+[![Build Status](https://travis-ci.com/janbiasi/monopacker.svg?token=MXMxq8QRkbrDLive8EJ8&branch=master)](https://travis-ci.com/janbiasi/monopacker) [![npm version](https://badge.fury.io/js/monopacker.svg)](https://badge.fury.io/js/monopacker) [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 # monopacker
-A tool for managing builds of monorepo frontend projects with eg. lerna or similar tools. Developers who are working within 
+
+A tool for managing builds of monorepo frontend projects with eg. lerna or similar tools. Developers who are working within
 monorepositories often have the problem that they need to deploy an application but don't want to deploy the whole repository.
 This is not possible by default, but there's monopacker - a tool for generating small bundles out of your monorepository applications which are straight deployable - with extras!
 
-* [Installation](#installation)
-* [CLI API](#cli-api)
-* [Programmatic API](#programmatic-api)
+-   [Installation](#installation)
+-   [CLI API](#cli-api)
+-   [Programmatic API](#programmatic-api)
+
+###### But why do I need such a thing?
+
+These days handling big projects with monorepositories isn't easy at all. Most of the time you just want one bit of all your packages builded and deployed to a server without the whole overhead of the other packages, configs and so on. Lerna doesn't provide a solid way to do this, you always need to copy your whole repository to your target server because any package in your main entry point will require something else from another module (which you didn't even know it existed).
+
+Monopacker does exactly solve this issue for you; it builds a single package inside the monorepository into a standalone application which runs without the overhead - and it uses the same syntax as `npm pack` so you don't need to learn anything new! Isn't that great?
 
 ###### The process steps in depth
 
@@ -20,11 +27,12 @@ This is not possible by default, but there's monopacker - a tool for generating 
 7. Done! Your application is ready to deploy individually as it is.
 
 ###### But I need to _&lt;insert your requirement here&gt;_ ...
-- Monopacker provides a flexible programmatical API
-- Monopacker provides also a CLI implementation
-- Monopacker supports a hook system where you are able to interact within every step of the packing process
-- Monopacker can be configured what to copy and what not
-- Monopacker supports internal caching for repetetive processes and large repos with circular references
+
+-   Monopacker provides a flexible programmatical API
+-   Monopacker provides also a CLI implementation
+-   Monopacker supports a hook system where you are able to interact within every step of the packing process
+-   Monopacker can be configured what to copy and what not
+-   Monopacker supports internal caching for repetetive processes and large repos with circular references
 
 ## Installation
 
@@ -39,10 +47,10 @@ yarn add monopacker --dev
 > **Note**: the CLI does not support hooks! If you want to inject side-effects please use the [programmatic API](#programmatic-api)
 
 ### analyze
-| Option             | Short      | Default              | Description                                 |
-|--------------------|------------|----------------------|---------------------------------------------|
-| `--root`           | `-r`       | `process.cwd()`      | Set the root directory for the process      |
 
+| Option   |  Short | Default         | Description                            |
+| -------- | ------ | --------------- | -------------------------------------- |
+| `--root` | `-r`   | `process.cwd()` | Set the root directory for the process |
 
 ```sh
 # Will output a JSON graph of the packable application
@@ -51,12 +59,13 @@ $ monopacker a packages/apps/main
 ```
 
 ### pack
-| Option             | Short      | Default              | Description                                 |
-|--------------------|------------|----------------------|---------------------------------------------|
-| `--root`           | `-r`       | `process.cwd()`      | Set the root directory for the process      |
-| `--copy`           | `-c`       | `**,!package.json`   | Globs for what to copy initiall to the target, comma separated |
-| `--noCache`        | `-nc`      | `false`              | Disable all caching mechanisms              |
-| `--adapter`        | `-a`       | `lerna`              | Select a certain adapter for processing, we only support lerna atm. |
+
+| Option      |  Short | Default            | Description                                                         |
+| ----------- | ------ | ------------------ | ------------------------------------------------------------------- |
+| `--root`    | `-r`   | `process.cwd()`    | Set the root directory for the process                              |
+| `--copy`    | `-c`   | `**,!package.json` | Globs for what to copy initiall to the target, comma separated      |
+| `--noCache` | `-nc`  | `false`            | Disable all caching mechanisms                                      |
+| `--adapter` | `-a`   | `lerna`            | Select a certain adapter for processing, we only support lerna atm. |
 
 ```sh
 # Will pack the application from `packages/apps/main` to `packed`
@@ -104,85 +113,85 @@ $ monopacker pack packages/main packed/main --root ./test/fixtures/basic/ --noCa
 
 ```ts
 interface IPackerOptions {
-	/**
-	 * Source to pack (root is cwd)
-	 */
-	source: string;
-	/**
-	 * Target for the packed app (root is cwd)
-	 */
-	target: string;
-	/**
-	 * Monorepository type, at the moment only lerna support.
-	 * Default: auto-detected
-	 */
-	type?: 'lerna' | 'nx';
-	/**
-	 * Enable or disable the cache, default is true (enabled)
-	 */
-	cache?: boolean;
-	/**
-	 * Working directory, can be changed, default: process.cwd()
-	 */
-	cwd?: string;
-	/**
-	 * Expressions to match package names which are internally defined (optional)
-	 * Can be used for eg. rewriting globally available modules such as 'react-scripts'
-	 * to provide a custom implementation for.
-	 */
-	internals?: string[];
-	/**
-	 * The adapter for the analytics process, default: lerna
-	 */
-	adapter?: IAdapterConstructable;
-	/**
-	 * Optional copy settings, defaults to `['**', '!package.json', ...]`
-	 */
+    /**
+     * Source to pack (root is cwd)
+     */
+    source: string;
+    /**
+     * Target for the packed app (root is cwd)
+     */
+    target: string;
+    /**
+     * Monorepository type, at the moment only lerna support.
+     * Default: auto-detected
+     */
+    type?: 'lerna' | 'nx';
+    /**
+     * Enable or disable the cache, default is true (enabled)
+     */
+    cache?: boolean;
+    /**
+     * Working directory, can be changed, default: process.cwd()
+     */
+    cwd?: string;
+    /**
+     * Expressions to match package names which are internally defined (optional)
+     * Can be used for eg. rewriting globally available modules such as 'react-scripts'
+     * to provide a custom implementation for.
+     */
+    internals?: string[];
+    /**
+     * The adapter for the analytics process, default: lerna
+     */
+    adapter?: IAdapterConstructable;
+    /**
+     * Optional copy settings, defaults to `['**', '!package.json', ...]`
+     */
     copy?: string[];
     /**
      * Enable the debug mode, defaults to false
      */
     debug?: boolean;
-	/**
-	 * Define opt-in hooks for certain steps
-	 */
-	hooks?: Partial<{
-		[HookPhase.INIT]: Array<(packer: Packer) => Promise<any>>;
-		[HookPhase.PREANALYZE]: Array<(packer: Packer) => Promise<any>>;
-		[HookPhase.POSTANALYZE]: Array<
-			(
-				packer: Packer,
-				information: {
-					analytics: IAnalytics;
-					generateAnalyticsFile: boolean;
-					fromCache: boolean;
-				}
-			) => Promise<any>
-		>;
-		[HookPhase.PRECOPY]: Array<(packer: Packer) => Promise<any>>;
-		[HookPhase.POSTCOPY]: Array<(packer: Packer, copiedFiles: string[]) => Promise<any>>;
-		[HookPhase.PRELINK]: Array<(packer: Packer, entries: ILernaPackageListEntry[]) => Promise<any>>;
-		[HookPhase.POSTLINK]: Array<(packer: Packer, entries: ILernaPackageListEntry[]) => Promise<any>>;
-		[HookPhase.PREINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
-		[HookPhase.POSTINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
-		[HookPhase.PACKED]: Array<
-			(
-				packer: Packer,
-				resume: {
-					analytics: IAnalytics;
-					artificalPackage: ArtificalPackage;
-					copiedFiles: string[];
-				}
-			) => Promise<any>
-		>;
-	}>;
+    /**
+     * Define opt-in hooks for certain steps
+     */
+    hooks?: Partial<{
+        [HookPhase.INIT]: Array<(packer: Packer) => Promise<any>>;
+        [HookPhase.PREANALYZE]: Array<(packer: Packer) => Promise<any>>;
+        [HookPhase.POSTANALYZE]: Array<
+            (
+                packer: Packer,
+                information: {
+                    analytics: IAnalytics;
+                    generateAnalyticsFile: boolean;
+                    fromCache: boolean;
+                }
+            ) => Promise<any>
+        >;
+        [HookPhase.PRECOPY]: Array<(packer: Packer) => Promise<any>>;
+        [HookPhase.POSTCOPY]: Array<(packer: Packer, copiedFiles: string[]) => Promise<any>>;
+        [HookPhase.PRELINK]: Array<(packer: Packer, entries: ILernaPackageListEntry[]) => Promise<any>>;
+        [HookPhase.POSTLINK]: Array<(packer: Packer, entries: ILernaPackageListEntry[]) => Promise<any>>;
+        [HookPhase.PREINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
+        [HookPhase.POSTINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
+        [HookPhase.PACKED]: Array<
+            (
+                packer: Packer,
+                resume: {
+                    analytics: IAnalytics;
+                    artificalPackage: ArtificalPackage;
+                    copiedFiles: string[];
+                }
+            ) => Promise<any>
+        >;
+    }>;
 }
 ```
 
 ### Debugging
 
 ```ts
-import { Packer } from 'monopacker';
+import { Packer } from 'monopacker';
 
 new Packer({
     source: 'packages/apps/my-app',
@@ -194,11 +203,11 @@ new Packer({
 ### Multi taping
 
 ```ts
-import { Packer, Taper, HookPhase } from 'monopacker';
+import { Packer, Taper, HookPhase } from 'monopacker';
 
 const packer = new Packer({
     source: 'packages/apps/my-app',
-    target: 'packed/my-app',
+    target: 'packed/my-app'
 });
 
 packer.subscribe(
@@ -212,19 +221,16 @@ packer.subscribe(
 await packer.pack();
 ```
 
-
-
 ### Simple example
 
 ```ts
-import { Packer } from 'monopacker';
+import { Packer } from 'monopacker';
 
 new Packer({
     source: 'packages/apps/my-app',
-    target: 'packed/my-app',
+    target: 'packed/my-app'
 }).pack();
 ```
-
 
 ### Advanced example
 
@@ -232,7 +238,7 @@ new Packer({
 import { resolve } from 'path';
 import * as rimraf from 'rimraf';
 import * as execa from 'execa';
-import { Packer } from 'monopacker';
+import { Packer } from 'monopacker';
 
 (async () => {
     new Packer({
@@ -252,7 +258,7 @@ import { Packer } from 'monopacker';
             init: [
                 async () => {
                     await execa('npm', ['run', 'build']);
-                },
+                }
             ],
             precopy: [
                 async packer => {
@@ -266,5 +272,6 @@ import { Packer } from 'monopacker';
     await packer.pack();
 
     console.log('done!');
-})();q
+})();
+q;
 ```

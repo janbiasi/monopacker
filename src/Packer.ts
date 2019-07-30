@@ -383,16 +383,12 @@ export class Packer {
 					installerScriptContent = `npm i --ignore-scripts ${monopackerArchiveList.join(' ')}`;
 				}
 
-				if (artificalPackageInfo.scripts.postinstall && artificalPackageInfo.scripts.preinstall) {
+				if (artificalPackageInfo.scripts.publish) {
 					// send an info if both scripts are blocked by the user
-					console.log('Warning: pre- and postinstall package scripts are already in use,');
+					console.log('Warning: NPM publish package scripts is already in use,');
 					console.log('         please make sure you provide your own strategy for installation.');
-				} else if (artificalPackageInfo.scripts.postinstall && !artificalPackageInfo.scripts.preinstall) {
-					// we use pre-install if post-install is already in use
-					artificalPackageInfo.scripts.preinstall = installerScriptContent;
-				} else if (!artificalPackageInfo.scripts.postinstall) {
-					// we use post-install if available
-					artificalPackageInfo.scripts.postinstall = installerScriptContent;
+				} else {
+					artificalPackageInfo.scripts.publish = installerScriptContent;
 				}
 			}
 
@@ -401,6 +397,11 @@ export class Packer {
 				join(this.options.target, 'package.json'),
 				JSON.stringify(artificalPackageInfo, null, 2)
 			);
+
+			// pack final application if needed
+			if (this.options.packTarget) {
+				await execa('npm', ['pack', this.options.target]);
+			}
 
 			// finalize
 			await this.teardown();

@@ -40,15 +40,13 @@ describe('Packer', () => {
 				const fakeHook = jest.fn(async () => Promise.resolve());
 				const packer = createTestPackerForBasic({
 					[HookPhase.INIT]: [fakeHook],
-					[HookPhase.PACKED]: [fakeHook],
-					[HookPhase.POSTANALYZE]: [fakeHook],
+					[HookPhase.PRECOPY]: [fakeHook],
 					[HookPhase.POSTCOPY]: [fakeHook],
-					[HookPhase.POSTINSTALL]: [fakeHook],
 					[HookPhase.PREANALYZE]: [fakeHook],
+					[HookPhase.POSTANALYZE]: [fakeHook],
 					[HookPhase.PRELINK]: [fakeHook],
 					[HookPhase.POSTLINK]: [fakeHook],
-					[HookPhase.PRECOPY]: [fakeHook],
-					[HookPhase.PREINSTALL]: [fakeHook]
+					[HookPhase.PACKED]: [fakeHook]
 				});
 				// TODO: call time was 10 before, we removed install as default
 				await packer.pack();

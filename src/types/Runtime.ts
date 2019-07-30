@@ -10,8 +10,6 @@ export enum HookPhase {
 	POSTCOPY = 'postcopy',
 	PRELINK = 'prelink',
 	POSTLINK = 'postlink',
-	PREINSTALL = 'preinstall',
-	POSTINSTALL = 'postinstall',
 	PACKED = 'packed'
 }
 
@@ -21,7 +19,7 @@ export interface IPackerOptions {
 	 */
 	source: string;
 	/**
-	 * Enable to automatically install the packed project, default: false
+	 * Enable to automatically install the packed project, default: `false`
 	 */
 	autoinstall?: boolean;
 	/**
@@ -33,11 +31,11 @@ export interface IPackerOptions {
 	 */
 	type?: 'lerna' | 'nx';
 	/**
-	 * Enable or disable the cache, default: true (enabled)
+	 * Enable or disable the cache, default: `true` (enabled)
 	 */
 	cache?: boolean;
 	/**
-	 * Working directory, can be changed, default: process.cwd()
+	 * Working directory, can be changed, default: `process.cwd()`
 	 */
 	cwd?: string;
 	/**
@@ -47,7 +45,7 @@ export interface IPackerOptions {
 	 */
 	internals?: string[];
 	/**
-	 * The adapter for the analytics process, default: lerna
+	 * The adapter for the analytics process, default: `'lerna'`
 	 */
 	adapter?: IAdapterConstructable;
 	/**
@@ -60,9 +58,13 @@ export interface IPackerOptions {
 	debug?: boolean;
 	/**
 	 * Decide if you want an installer file (`monopacker.installer.js`)
-	 * as postinstall process or not
+	 * as postinstall process or not, default: `false`
 	 */
 	createInstaller?: boolean;
+	/**
+	 * Decide if you want your target also packed or not, default: `false`
+	 */
+	packTarget?: boolean;
 	/**
 	 * Define opt-in hooks for certain steps, default: {}
 	 */
@@ -83,8 +85,8 @@ export interface IPackerOptions {
 		[HookPhase.POSTCOPY]: Array<(packer: Packer, copiedFiles: string[]) => Promise<any>>;
 		[HookPhase.PRELINK]: Array<(packer: Packer, entries: InternalPackageList) => Promise<any>>;
 		[HookPhase.POSTLINK]: Array<(packer: Packer, entries: InternalPackageList) => Promise<any>>;
-		[HookPhase.PREINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
-		[HookPhase.POSTINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
+		// [HookPhase.PREINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
+		// [HookPhase.POSTINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
 		[HookPhase.PACKED]: Array<
 			(
 				packer: Packer,

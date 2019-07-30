@@ -20,7 +20,7 @@ Object {
   },
   "name": "@fixture/main-packed",
   "scripts": Object {
-    "postinstall": "node ./monopacker.installer.js",
+    "publish": "node ./monopacker.installer.js",
   },
   "version": "0.2.7",
 }

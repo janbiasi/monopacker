@@ -21,7 +21,7 @@ describe('Packer', () => {
 
 				expect(generatedPkg).toBeTruthy();
 				expect(generatedPkg).toMatchSnapshot();
-				expect(generatedPkg.scripts.postinstall).toContain('node ./monopacker.installer.js');
+				expect(generatedPkg.scripts.publish).toContain('node ./monopacker.installer.js');
 
 				try {
 					const installerContents = await readFile(join(BASIC_CWD, 'temp', 'monopacker.installer.js'));

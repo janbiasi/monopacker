@@ -50,7 +50,7 @@ describe('Packer', () => {
 					version: '1.0.0',
 					description: '',
 					scripts: {
-						postinstall:
+						publish:
 							'npm i --ignore-scripts ./.monopacker/fixture-multitree-ab-1.0.0.tgz ./.monopacker/fixture-multitree-a-1.0.0.tgz ./.monopacker/fixture-multitree-b-1.0.0.tgz'
 					},
 					monopacker: {

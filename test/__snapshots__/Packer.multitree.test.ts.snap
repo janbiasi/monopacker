@@ -71,7 +71,7 @@ Object {
   },
   "name": "@fixture/multitree-c-packed",
   "scripts": Object {
-    "postinstall": "npm i --ignore-scripts ./.monopacker/fixture-multitree-ab-1.0.0.tgz ./.monopacker/fixture-multitree-a-1.0.0.tgz ./.monopacker/fixture-multitree-b-1.0.0.tgz",
+    "publish": "npm i --ignore-scripts ./.monopacker/fixture-multitree-ab-1.0.0.tgz ./.monopacker/fixture-multitree-a-1.0.0.tgz ./.monopacker/fixture-multitree-b-1.0.0.tgz",
   },
   "version": "1.0.0",
 }
