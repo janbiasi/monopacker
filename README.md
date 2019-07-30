@@ -8,15 +8,20 @@ This is not possible by default, but there's monopacker - a tool for generating 
 
 -   [Installation](#installation)
 -   [CLI API](#cli-api)
+    -   [analyze](#analyze)
+    -   [pack](#pack)
 -   [Programmatic API](#programmatic-api)
+    -   [Debugging](#debugging)
+    -   [Multi-taping (hooks)](#multi-taping)
+    -   [Examples](#simple-example)
 
-###### But why do I need such a thing?
+#### But why do I need such a thing?
 
 These days handling big projects with monorepositories isn't easy at all. Most of the time you just want one bit of all your packages builded and deployed to a server without the whole overhead of the other packages, configs and so on. Lerna doesn't provide a solid way to do this, you always need to copy your whole repository to your target server because any package in your main entry point will require something else from another module (which you didn't even know it existed).
 
 Monopacker does exactly solve this issue for you; it builds a single package inside the monorepository into a standalone application which runs without the overhead - and it uses the same syntax as `npm pack` so you don't need to learn anything new! Isn't that great?
 
-###### The process steps in depth
+#### The process steps in depth
 
 1. Aggregate all dependencies of the target application
 2. Detect which dependencies come from NPM and which are located in the repo
@@ -26,7 +31,7 @@ Monopacker does exactly solve this issue for you; it builds a single package ins
 6. Copy all needed submodules to the packed target to "fake" the installation
 7. Done! Your application is ready to deploy individually as it is.
 
-###### But I need to _&lt;insert your requirement here&gt;_ ...
+#### But I need to _&lt;insert your requirement here&gt;_ ...
 
 -   Monopacker provides a flexible programmatical API
 -   Monopacker provides also a CLI implementation
@@ -44,7 +49,16 @@ yarn add monopacker --dev
 
 ## CLI API
 
-> **Note**: the CLI does not support hooks! If you want to inject side-effects please use the [programmatic API](#programmatic-api)
+You can use the command as you would use `npm pack <dir>`, but with a lot more arguments. If you think the command is too complex, considering switching to the [programmatic API](#programmatic-api) would be worth it.
+
+> **Note**: the CLI does not support hooks (taping)! If you want to inject side-effects please use the [programmatic API](#programmatic-api)
+
+### global options
+
+| Option      |  Short | Default | Description                |
+| ----------- | ------ | ------- | -------------------------- |
+| `--debug`   | `-d`   | `false` | Enable debug mode          |
+| `--verbose` | `-v`   | `false` | Sets the output to verbose |
 
 ### analyze
 
@@ -60,12 +74,14 @@ $ monopacker a packages/apps/main
 
 ### pack
 
-| Option      |  Short | Default            | Description                                                         |
-| ----------- | ------ | ------------------ | ------------------------------------------------------------------- |
-| `--root`    | `-r`   | `process.cwd()`    | Set the root directory for the process                              |
-| `--copy`    | `-c`   | `**,!package.json` | Globs for what to copy initiall to the target, comma separated      |
-| `--noCache` | `-nc`  | `false`            | Disable all caching mechanisms                                      |
-| `--adapter` | `-a`   | `lerna`            | Select a certain adapter for processing, we only support lerna atm. |
+| Option        |  Short | Default            | Description                                                                                                    |
+| ------------- | ------ | ------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `--root`      | `-r`   | `process.cwd()`    | Set the root directory for the process                                                                         |
+| `--copy`      | `-c`   | `**,!package.json` | Globs for what to copy initiall to the target, comma separated                                                 |
+| `--noCache`   | `-nc`  | `false`            | Disable all caching mechanisms                                                                                 |
+| `--adapter`   | `-a`   | `lerna`            | Select a certain adapter for processing, we only support lerna atm.                                            |
+| `--no-pack`   | `-np`  | `false`            | Disable NPM packing of the final artefact                                                                      |
+| `--installer` | `-i`   | `false`            | Create an installer file instead of the inline publish install script (recommended for complex custom scripts) |
 
 ```sh
 # Will pack the application from `packages/apps/main` to `packed`
@@ -103,8 +119,20 @@ $ monopacker pack packages/apps/main -nc
 ```
 
 ```sh
+# Generate `monopacker.installer.js` file
+$ monopacker pack packages/apps/main --installer
+$ monopacker pack packages/apps/main -i
+```
+
+```sh
+# Don't pack the final artefact
+$ monopacker pack packages/apps/main --noPack
+$ monopacker pack packages/apps/main -np
+```
+
+```sh
 # Complex example
-$ monopacker pack packages/main packed/main --root ./test/fixtures/basic/ --noCache --copy src,dist -a lerna
+$ monopacker pack packages/main packed/main --root ./test/fixtures/basic/ --noCache --noPack -i --copy src,dist -a lerna
 ```
 
 ## Programmatic API
@@ -172,8 +200,6 @@ interface IPackerOptions {
         [HookPhase.POSTCOPY]: Array<(packer: Packer, copiedFiles: string[]) => Promise<any>>;
         [HookPhase.PRELINK]: Array<(packer: Packer, entries: ILernaPackageListEntry[]) => Promise<any>>;
         [HookPhase.POSTLINK]: Array<(packer: Packer, entries: ILernaPackageListEntry[]) => Promise<any>>;
-        [HookPhase.PREINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
-        [HookPhase.POSTINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
         [HookPhase.PACKED]: Array<
             (
                 packer: Packer,

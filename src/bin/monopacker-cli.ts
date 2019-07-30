@@ -57,23 +57,14 @@ program
 	.option('-r, --root <dir>', 'Set a custom root directory, default: process.cwd()', process.cwd())
 	.option('-c, --copy [dirs]', 'Custom copy settings, pass in format "dir1,!notDir2"')
 	.option('-nc, --noCache', 'Disable caching', false)
-	.option('-np, --npm-pack-target', 'NPM Pack the final packed output', true)
+	.option('-np, --noPack', 'Do notNPM Pack the final packed output', false)
 	.option('-i, --installer', 'Use an installer file instead of inline command', false)
 	.option('-a, --adapter [name]', 'Set adapter for packing, allowed: lerna, nx', /^(lerna|nx)$/i, 'lerna')
 	.action(
 		async (
 			source,
 			target,
-			{
-				noCache = false,
-				npmPackTarget = false,
-				installer = false,
-				adapter,
-				copy,
-				root,
-				debug = false,
-				verbose = false
-			}
+			{ noCache = false, noPack = false, installer = false, adapter, copy, root, debug = false, verbose = false }
 		) => {
 			if (adapter) {
 				console.warn(
@@ -85,7 +76,7 @@ program
 				cwd: resolve(root),
 				source,
 				target,
-				packTarget: npmPackTarget,
+				packTarget: !noPack,
 				createInstaller: installer,
 				debug: verbose ? false : debug,
 				copy: copy ? copy.split('') : undefined,
