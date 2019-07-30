@@ -10,7 +10,6 @@ export async function pack(opts: IPackerOptions) {
 	let spinner = ora('Creating packer instance');
 	spinner.frame();
 	spinner.start();
-	let installTimer: [number, number];
 
 	const packer = new Packer({
 		cwd: opts.cwd,
@@ -61,23 +60,6 @@ export async function pack(opts: IPackerOptions) {
 					);
 				}
 			],
-			preinstall: [
-				async (_packer, { name, dependencies }) => {
-					spinner = spinner.start(`Installing ${countMsg(dependencies, 'package')} in ${name} ...`);
-					installTimer = process.hrtime();
-				}
-			],
-			postinstall: [
-				async (_packer, { dependencies }) => {
-					const [installationTimeInSeconds] = process.hrtime(installTimer);
-					spinner.succeed(
-						`Production packages have been installed (${countMsg(
-							dependencies,
-							'package'
-						)} in ~${installationTimeInSeconds}s)`
-					);
-				}
-			],
 			prelink: [
 				async (_packer, entries) => {
 					spinner.text = `Found ${countMsg(entries, 'entry', 'entries')} to copy`;
@@ -85,12 +67,12 @@ export async function pack(opts: IPackerOptions) {
 			],
 			postlink: [
 				async (_packer, entries) => {
-					spinner.succeed(`Linked ${countMsg(entries, 'monorepository package')} successfully`);
+					spinner.succeed(`Packed and linked ${countMsg(entries, 'monorepository package')} successfully`);
 				}
 			],
 			packed: [
 				async (_packer, { artificalPackage }) => {
-					spinner.info(`Packed hash is ${artificalPackage.monopacker.hash}`);
+					spinner.info(`Pack hash is ${artificalPackage.monopacker.hash}`);
 					spinner.succeed(`Application ${artificalPackage.name} packed successfully!`);
 				}
 			]

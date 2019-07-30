@@ -43,16 +43,6 @@ export function useDebugHooks(opts: Pick<IPackerOptions, 'target' | 'cwd' | 'sou
 				);
 			}
 		],
-		[HookPhase.PREINSTALL]: [
-			async (_packer, { name, dependencies }) => {
-				log(`Installing ${countMsg(dependencies, 'package')} in ${name} ...`);
-			}
-		],
-		[HookPhase.POSTINSTALL]: [
-			async (_packer, { dependencies }) => {
-				log(`Production packages have been installed (${countMsg(dependencies, 'package')})`);
-			}
-		],
 		[HookPhase.PRELINK]: [
 			async (_packer, entries) => {
 				log(`Found ${countMsg(entries, 'entry', 'entries')} to copy`);
