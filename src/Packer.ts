@@ -13,13 +13,11 @@ import {
 import {
 	fs,
 	asyncForEach,
-	pkg,
 	rimraf,
 	copyDir,
-	matcher,
+	multimatch,
 	execa,
 	displayPath,
-	createHash,
 	createIntegrityHash
 } from './utils';
 import { Taper } from './Taper';
@@ -323,9 +321,8 @@ export class Packer {
 			await copyDir(this.options.source, this.options.target, {
 				dereference: true,
 				filter: fileName => {
-					const doesMatchCriteria = this.options.copy
-						.map(filter => matcher.isMatch(fileName, filter))
-						.every(v => v === true);
+					const matches = multimatch(fileName.replace(this.cwd, ''), this.options.copy);
+					const doesMatchCriteria = matches.length > 0;
 
 					if (doesMatchCriteria) {
 						copiedFiles.push(fileName);

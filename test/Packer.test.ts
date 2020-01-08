@@ -1,6 +1,6 @@
 import { resolve, join } from 'path';
 import { Packer } from '../src/Packer';
-import { fs, rimraf } from '../src/utils';
+import { fs } from '../src/utils';
 import { HookPhase, IAnalytics, IAnalyticsWithIntegrity } from '../src/types';
 
 // hack to not provide this as option.cwd in packer ctor
