@@ -2,3 +2,4 @@ build
 .git
 __snapshots__
 packed
+temp
