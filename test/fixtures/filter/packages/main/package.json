@@ -1,0 +1,5 @@
+{
+  "name": "@fixture/filter-main",
+  "version": "0.2.7",
+  "main": "./src/include.js"
+}
