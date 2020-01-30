@@ -1,4 +1,4 @@
-import * as debug from 'debug';
+import debug from 'debug';
 import { IPackerOptions, HookPhase } from '../types';
 import { Packer, DEFAULT_PACKED_PATH } from '../Packer';
 import { countMsg, displayPath } from '../utils';

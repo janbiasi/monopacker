@@ -1,4 +1,4 @@
-import { resolve, join } from 'path';
+import { resolve } from 'path';
 import { IAnalytics, IPackerOptions } from '../src/types';
 import { Packer } from '../src/Packer';
 

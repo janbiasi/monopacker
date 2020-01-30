@@ -1,10 +1,10 @@
 import { dirname, relative, join, resolve } from 'path';
 import { createHash as createNativeHash } from 'crypto';
-import * as execa from 'execa';
-import * as _rimraf from 'rimraf';
-import * as fs from 'fs-extra';
-import * as glob from 'glob';
-import * as multimatch from 'multimatch';
+import execa from 'execa';
+import _rimraf from 'rimraf';
+import fs from 'fs-extra';
+import glob from 'glob';
+import multimatch from 'multimatch';
 import { ncp } from 'ncp';
 import { DependenciesLike, InternalPackageList, IAnalytics } from './types';
 
@@ -112,10 +112,10 @@ export function getLernaPackages(root: string) {
 		(() => {
 			try {
 				return loadJson(`${root}/lerna.json`).packages;
-			} catch (err) {}
+			} catch (err) { }
 			try {
 				return loadJson(`${root}/package.json`).workspaces;
-			} catch (err) {}
+			} catch (err) { }
 			return [];
 		})() || [];
 
@@ -188,15 +188,15 @@ export function createHash(value: string) {
 export function createIntegrityHash(version: string, analytics: IAnalytics) {
 	return createHash(
 		version +
-			JSON.stringify({
-				...analytics,
-				dependencies: {
-					...analytics.dependencies,
-					internal: analytics.dependencies.internal.map(
-						entry => `${entry.name}@${entry.version}|${!!entry.private}`
-					)
-				}
-			})
+		JSON.stringify({
+			...analytics,
+			dependencies: {
+				...analytics.dependencies,
+				internal: analytics.dependencies.internal.map(
+					entry => `${entry.name}@${entry.version}|${!!entry.private}`
+				)
+			}
+		})
 	);
 }
 
