@@ -11,6 +11,8 @@ const createTestPackerForBasic = (hooks?: Packer['hooks']) => createTestPackerFo
 
 const resolveInTarget = createResolverWithin(join(BASIC_CWD, 'temp'));
 
+jest.setTimeout(10000);
+
 describe('Packer', () => {
 	describe('Lerna', () => {
 		describe('core functions', () => {
