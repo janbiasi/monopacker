@@ -1,6 +1,6 @@
 {
   "name": "monopacker",
-  "version": "2.0.1-rc.1",
+  "version": "2.0.1-rc.0",
   "description": "A tool for managing builds of monorepo frontend projects with eg. lerna or similar tools.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
