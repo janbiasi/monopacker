@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Packer Lerna use installer should generate an installer file correctly 1`] = `
+Object {
+  "dependencies": Object {
+    "ansi-styles": "4.0.0",
+    "debug": "*",
+    "smallest": "1.0.1",
+    "supports-color": "7.0.0",
+  },
+  "description": "",
+  "monopacker": Object {
+    "hash": "c47f8432f2003d16eaa5afe09720adf81ef7b7b45388e687e7f480c20829cf99",
+    "linked": Object {
+      "@fixture/sub": "0.1.3",
+      "@fixture/subsub": "0.1.3",
+      "@fixture/subsubsub": "0.1.3",
+    },
+    "version": "1",
+  },
+  "name": "@fixture/main-packed",
+  "scripts": Object {
+    "publish": "node ./monopacker.installer.js",
+  },
+  "version": "0.2.7",
+}
+`;
+
+exports[`Packer Lerna use installer should generate an installer file correctly 2`] = `
+"#!/usr/bin/env node
+'use strict';
+
+const { exec } = require('child_process');
+
+exec(\`npm i --ignore-scripts ./.monopacker/fixture-sub-0.1.3.tgz ./.monopacker/fixture-subsub-0.1.3.tgz ./.monopacker/fixture-subsubsub-0.1.3.tgz\`)
+	.then(stdout => {
+		console.log(\`Monopacker post-installed 3 internal dependencies via tarballs\`);
+	})
+	.catch(sterr => {
+		console.log(\`Monopacker post-installer failed: %s\`, stderr);
+	});
+"
+`;

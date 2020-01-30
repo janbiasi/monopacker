@@ -1,12 +1,12 @@
 import { dirname, relative, join, resolve } from 'path';
 import { createHash as createNativeHash } from 'crypto';
-import * as execa from 'execa';
-import * as _rimraf from 'rimraf';
-import * as fs from 'fs-extra';
-import * as glob from 'glob';
-import * as multimatch from 'multimatch';
+import execa from 'execa';
+import _rimraf from 'rimraf';
+import fs from 'fs-extra';
+import glob from 'glob';
+import multimatch from 'multimatch';
 import { ncp } from 'ncp';
-import { DependenciesLike, LernaPackageList, IAnalytics } from './types';
+import { DependenciesLike, InternalPackageList, IAnalytics } from './types';
 
 export function findDuplicatesInArray<T extends string[] | number[]>(array: T) {
 	let object = {};
@@ -54,7 +54,7 @@ export function copyDir(
 	});
 }
 
-export async function getLernaPackages2(cwd: string): Promise<LernaPackageList> {
+export async function getLernaPackages2(cwd: string): Promise<InternalPackageList> {
 	const { stdout } = await execa('lerna', ['ls', '--all', '--json'], {
 		cwd
 	});
@@ -112,10 +112,10 @@ export function getLernaPackages(root: string) {
 		(() => {
 			try {
 				return loadJson(`${root}/lerna.json`).packages;
-			} catch (err) {}
+			} catch (err) { }
 			try {
 				return loadJson(`${root}/package.json`).workspaces;
-			} catch (err) {}
+			} catch (err) { }
 			return [];
 		})() || [];
 
@@ -124,8 +124,8 @@ export function getLernaPackages(root: string) {
 		return acc.concat(found);
 	}, []);
 
-	const subModules: LernaPackageList = modules.reduce(
-		(acc, f): LernaPackageList => {
+	const subModules: InternalPackageList = modules.reduce(
+		(acc, f): InternalPackageList => {
 			try {
 				let fname = `${root}/${f}`;
 				const stat = fs.statSync(fname);
@@ -156,7 +156,7 @@ export function getLernaPackages(root: string) {
 			}
 			return acc;
 		},
-		[] as LernaPackageList
+		[] as InternalPackageList
 	);
 
 	return subModules;
@@ -188,15 +188,15 @@ export function createHash(value: string) {
 export function createIntegrityHash(version: string, analytics: IAnalytics) {
 	return createHash(
 		version +
-			JSON.stringify({
-				...analytics,
-				dependencies: {
-					...analytics.dependencies,
-					internal: analytics.dependencies.internal.map(
-						entry => `${entry.name}@${entry.version}|${!!entry.private}`
-					)
-				}
-			})
+		JSON.stringify({
+			...analytics,
+			dependencies: {
+				...analytics.dependencies,
+				internal: analytics.dependencies.internal.map(
+					entry => `${entry.name}@${entry.version}|${!!entry.private}`
+				)
+			}
+		})
 	);
 }
 
