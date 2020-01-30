@@ -48,8 +48,12 @@ module.exports = {
 			{
 				assets: [
 					{
-						path: "/build/**",
+						path: "build/**",
 						label: "Bundle"
+					},
+					{
+						path: "./*.MD",
+						label: "Documentation"
 					}
 				]
 			}
