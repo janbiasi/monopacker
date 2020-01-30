@@ -41,7 +41,7 @@ jobs:
         skip_cleanup: true
         script:
           - npm run build && npx semantic-release
-    - stage: release-candidate
+    - stage: release
       node_js: lts/*
       deploy:
         on:
