@@ -25,6 +25,7 @@ branches:
   - /^legacy\/.*$/
   - /^experimental\/.*$/
   - assets
+  - gh-pages
 
 jobs:
   include:
@@ -36,6 +37,15 @@ jobs:
       deploy:
         on:
           branch: master
+        provider: script
+        skip_cleanup: true
+        script:
+          - npm run build && npx semantic-release
+    - stage: release-candidate
+      node_js: lts/*
+      deploy:
+        on:
+          branch: next
         provider: script
         skip_cleanup: true
         script:
