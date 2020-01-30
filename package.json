@@ -1,6 +1,6 @@
 {
   "name": "monopacker",
-  "version": "2.0.0-rc.0",
+  "version": "2.0.1-rc.1",
   "description": "A tool for managing builds of monorepo frontend projects with eg. lerna or similar tools.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -14,7 +14,8 @@
     "commit": "npx git-cz",
     "pretest": "rimraf ./test/**/*.gz ./test/**/.temp",
     "test": "jest --runInBand",
-    "prerelease": "npm-run-all test build",
+    "changelogs": "conventional-changelog -p angular -i CHANGELOG.md -s",
+    "prerelease": "npm-run-all test build changelogs",
     "release": "semantic-release"
   },
   "repository": {
@@ -44,41 +45,54 @@
   "homepage": "https://github.com/janbiasi/monopacker#readme",
   "dependencies": {
     "debug": "4.1.1",
-    "execa": "2.0.3",
+    "execa": "4.0.0",
     "fs-extra": "8.1.0",
+    "matcher": "2.1.0",
     "glob": "7.1.4",
-    "matcher": "2.0.0",
+    "multimatch": "4.0.0",
     "ncp": "2.0.0",
-    "ora": "3.4.0",
-    "rimraf": "2.6.3"
+    "ora": "4.0.3",
+    "rimraf": "3.0.0"
   },
   "devDependencies": {
     "@semantic-release/commit-analyzer": "github:semantic-release/commit-analyzer",
-    "@semantic-release/github": "5.4.2",
-    "@semantic-release/npm": "5.1.13",
-    "@semantic-release/release-notes-generator": "7.2.1",
-    "@types/debug": "4.1.4",
+    "@semantic-release/github": "7.0.0",
+    "@semantic-release/npm": "7.0.0",
+    "@semantic-release/release-notes-generator": "9.0.0",
+    "@types/debug": "4.1.5",
     "@types/ejs": "2.6.3",
     "@types/execa": "0.9.0",
-    "@types/fs-extra": "8.0.0",
-    "@types/jest": "24.0.15",
+    "@types/fs-extra": "8.0.1",
+    "@types/jest": "24.0.25",
     "@types/matcher": "1.1.0",
-    "@types/ncp": "2.0.1",
-    "@types/rimraf": "2.0.2",
-    "ejs": "2.6.2",
-    "jest": "24.8.0",
-    "jest-html-reporter": "2.5.0",
+    "@types/ncp": "2.0.3",
+    "@types/rimraf": "2.0.3",
+    "conventional-changelog-cli": "2.0.31",
+    "ejs": "3.0.1",
+    "jest": "24.9.0",
+    "jest-html-reporter": "2.8.0",
     "npm-run-all": "4.1.5",
-    "prettier": "1.18.2",
-    "semantic-release": "15.13.19",
-    "ts-jest": "24.0.2",
-    "ts-node": "8.3.0",
-    "typescript": "3.5.2"
+    "prettier": "1.19.1",
+    "semantic-release": "17.0.1",
+    "ts-jest": "24.3.0",
+    "ts-node": "8.5.4",
+    "typescript": "3.7.4"
   },
   "files": [
     "build",
     ".releaserc",
     "README.md",
     "LICENSE"
-  ]
+  ],
+  "config": {
+    "commitizen": {
+      "maxHeaderWidth": 120,
+      "maxLineWidth": 120,
+      "defaultType": "",
+      "defaultScope": "",
+      "defaultSubject": "",
+      "defaultBody": "",
+      "defaultIssues": ""
+    }
+  }
 }

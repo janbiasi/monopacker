@@ -4,7 +4,7 @@ import * as execa from 'execa';
 import * as _rimraf from 'rimraf';
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
-import * as matcher from 'matcher';
+import * as multimatch from 'multimatch';
 import { ncp } from 'ncp';
 import { DependenciesLike, InternalPackageList, IAnalytics } from './types';
 
@@ -202,4 +202,4 @@ export function createIntegrityHash(version: string, analytics: IAnalytics) {
 
 export const pkg = require('../package.json');
 
-export { fs, matcher, execa };
+export { fs, multimatch, execa };
