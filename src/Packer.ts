@@ -1,4 +1,5 @@
 import { resolve, join, isAbsolute } from 'path';
+import { compile } from 'ejs';
 import debug from 'debug';
 import {
 	IPackerOptions,
@@ -10,10 +11,11 @@ import {
 	ArtificalPackage,
 	IAnalyticsWithIntegrity
 } from './types';
-import { fs, asyncForEach, rimraf, copyDir, multimatch, execa, displayPath, createIntegrityHash } from './utils';
+import { fs, asyncForEach, rimraf, copyDir, multimatch, execa, createIntegrityHash } from './utils';
 import { Taper } from './Taper';
 import { AdapterLerna } from './adapter';
 import { useDebugHooks } from './helper/debug-hooks';
+import { Folders, Files } from './const';
 
 const neededCopySettings = ['**', '!node_modules', '!package.json'];
 
@@ -28,7 +30,9 @@ const defaultCopySettings = [
 	'!tsconfig*.json'
 ];
 
-export const DEFAULT_PACKED_PATH = 'packed';
+export const DEFAULT_PACKED_PATH = 'monopacked';
+
+const MONOPACKER_INSTALLER_TEMPLATE = resolve(__dirname, 'templates', 'monopacker.installer.ejs');
 
 export class Packer {
 	public static version: string = '1';
@@ -125,6 +129,30 @@ export class Packer {
 	}
 
 	/**
+	 * Create an internally, npm packable, mono package.
+	 * This is used for internal dependencies of the main packable entry point.
+	 */
+	private async createPackableInternal(source: string, dest: string) {
+		await fs.mkdirp(dest);
+		const packageDef = await this.fetchPackage(resolve(source, 'package.json'));
+		await copyDir(source, dest, {
+			dereference: true,
+			filter: filename => {
+				if (filename.indexOf('node_modules') > -1) {
+					return false;
+				}
+
+				return true;
+			}
+		});
+
+		packageDef.dependencies = {};
+		packageDef.devDependencies = {};
+
+		await fs.writeFile(resolve(dest, 'package.json'), JSON.stringify(packageDef, null, 2));
+	}
+
+	/**
 	 * Subscribe to packer taper instance
 	 * @param {Taper<HookPhase, THooks>}
 	 * @typeparam THooks defines hook type
@@ -170,59 +198,19 @@ export class Packer {
 	}
 
 	/**
-	 * Removes and/or re-creates the target folder
+	 * Removes and/or re-creates the target folder including the .monopacker meta folder
 	 */
 	public async prepare(): Promise<void> {
 		await rimraf(this.options.target);
-		await fs.mkdirp(this.options.target);
+		await fs.mkdirp(resolve(this.options.target, Folders.MONOPACKER));
 	}
 
 	/**
 	 * Resets the packer instance and environment
 	 */
-	public async teardown(): Promise<void> {
+	public teardown(): void {
 		debug.disable();
 		process.chdir(this.originalCwd);
-	}
-
-	/**
-	 * Runs a certain shell command inside the source directory
-	 * @param {string} command
-	 * @param {string[]} args
-	 */
-	public async runInSource(command: string, args: string[]) {
-		try {
-			return await execa(command, args, {
-				cwd: this.options.source
-			});
-		} catch (err) {
-			throw new Error(
-				`Failed command execution ${command} ${args.join(' ')}: ${err.message} (in source ${displayPath(
-					this.cwd,
-					this.options.source
-				)})`
-			);
-		}
-	}
-
-	/**
-	 * Runs a certain shell command inside the target directory
-	 * @param {string} command
-	 * @param {string[]} args
-	 */
-	public async runInTarget(command: string, args: string[] = []) {
-		try {
-			return await execa(command, args, {
-				cwd: this.options.target
-			});
-		} catch (err) {
-			throw new Error(
-				`Failed command execution ${command} ${args.join(' ')}: ${err.message} (in target ${displayPath(
-					this.cwd,
-					this.options.target
-				)})`
-			);
-		}
 	}
 
 	/**
@@ -230,7 +218,7 @@ export class Packer {
 	 * Might be delivered from cache when running parallel processes, can be disabled
 	 * in the options.
 	 */
-	public async analyze(generateAnalyticsFile: boolean = true): Promise<IAnalytics> {
+	public async analyze(dryRun: boolean = false): Promise<IAnalytics> {
 		const everythingsAllright = await this.validate();
 		if (!everythingsAllright) {
 			throw new Error(`Invalid options provided, check if all paths exists`);
@@ -242,21 +230,31 @@ export class Packer {
 
 		try {
 			await this.taper.tap(HookPhase.PREANALYZE);
-			await this.prepare();
+			if (dryRun === false) {
+				// setup target structure
+				await this.prepare();
+			}
+
 			const analytics = await this.adapter.analyze();
 
 			// set integrity hash for checks
 			(analytics as IAnalyticsWithIntegrity).integrity = createIntegrityHash(Packer.version, analytics);
 
+			// rewrite internal dependency paths to non-absolute
+			analytics.dependencies.internal = analytics.dependencies.internal.map(internalDep => ({
+				...internalDep,
+				location: internalDep.location.replace(this.options.cwd, '.')
+			}));
+
 			// tap and write analytics
 			await this.taper.tap(HookPhase.POSTANALYZE, {
 				analytics,
-				generateAnalyticsFile,
+				dryRun,
 				fromCache: false
 			});
-			if (generateAnalyticsFile) {
+			if (dryRun === false) {
 				await fs.writeFile(
-					resolve(this.options.target, 'monopacker.analytics.json'),
+					resolve(this.options.target, Folders.MONOPACKER, Files.ANALYTICS),
 					JSON.stringify(analytics, null, 2)
 				);
 			}
@@ -281,6 +279,7 @@ export class Packer {
 				name: `${sourcePkg.name}-packed`,
 				version: sourcePkg.version || '0.0.0',
 				description: sourcePkg.description || '',
+				scripts: sourcePkg.scripts || {},
 				monopacker: {
 					// push hash for integrity checks
 					hash: (analytics as IAnalyticsWithIntegrity).integrity,
@@ -324,25 +323,84 @@ export class Packer {
 			});
 			await this.taper.tap(HookPhase.POSTCOPY, copiedFiles);
 
+			// pack all synthethic packages with the `npm pack` command
+			let nativeNpmPackedArchiveList: string[] = [];
+			let monopackerArchiveList: string[] = [];
+			await asyncForEach(analytics.dependencies.internal, async lernaPkg => {
+				const tempPackedPath = resolve(
+					this.options.target,
+					Folders.MONOPACKER,
+					Folders.INTERNAL,
+					lernaPkg.name.replace('/', '-').replace('@', '')
+				);
+				await this.createPackableInternal(lernaPkg.location, tempPackedPath);
+				const { stdout } = await execa('npm', ['pack', tempPackedPath], {
+					maxBuffer: 200_000_000
+				});
+				await rimraf(tempPackedPath);
+				nativeNpmPackedArchiveList.push(stdout);
+			});
+
+			await asyncForEach(nativeNpmPackedArchiveList, async packedArchiveName => {
+				const tarArchivePath = resolve(this.options.cwd, packedArchiveName);
+				const targetTarArchivePath = resolve(this.options.target, Folders.MONOPACKER, packedArchiveName);
+				// add relative path from target to the archive list
+				monopackerArchiveList.push(targetTarArchivePath.replace(this.options.target, '.'));
+				// copy tarball to .monopacker directory
+				await fs.move(tarArchivePath, targetTarArchivePath);
+				// remove old tarball in root directory (npm default, can't be overwritten :( ...)
+				await fs.remove(tarArchivePath);
+			});
+
+			// write package definitions to a registry file
+			await fs.writeFile(
+				resolve(this.options.target, Folders.MONOPACKER, Files.REGISTRY),
+				JSON.stringify(
+					monopackerArchiveList.map(archivePath => archivePath.replace(this.options.target, '.')),
+					null,
+					2
+				)
+			);
+			await this.taper.tap(HookPhase.POSTLINK, analytics.dependencies.internal);
+
+			// create postinstall script for package tarballs
+			if (monopackerArchiveList) {
+				let installerScriptContent: string;
+
+				if (this.options.createInstaller) {
+					const installerTemplate = await fs.readFile(MONOPACKER_INSTALLER_TEMPLATE, 'utf-8');
+					const installerCompiler = compile(installerTemplate, {
+						async: true,
+						cache: true
+					});
+					const installerContents = await installerCompiler({
+						packages: monopackerArchiveList
+					});
+					await fs.writeFile(resolve(this.options.target, 'monopacker.installer.js'), installerContents);
+					installerScriptContent = 'node ./monopacker.installer.js';
+				} else {
+					installerScriptContent = `npm i --ignore-scripts ${monopackerArchiveList.join(' ')}`;
+				}
+
+				if (artificalPackageInfo.scripts.publish) {
+					// send an info if both scripts are blocked by the user
+					console.log('Warning: NPM publish package scripts is already in use,');
+					console.log('         please make sure you provide your own strategy for installation.');
+				} else {
+					artificalPackageInfo.scripts.publish = installerScriptContent;
+				}
+			}
+
 			// create artificial target package.json
 			await fs.writeFile(
 				join(this.options.target, 'package.json'),
 				JSON.stringify(artificalPackageInfo, null, 2)
 			);
 
-			// install production dependencies
-			await this.taper.tap(HookPhase.PREINSTALL, artificalPackageInfo);
-			await this.runInTarget('npm', ['install']);
-			await this.taper.tap(HookPhase.POSTINSTALL, artificalPackageInfo);
-
-			// copy symlinked sub-modules
-			await this.taper.tap(HookPhase.PRELINK, analytics.dependencies.internal);
-			await asyncForEach(analytics.dependencies.internal, async lernaPkg => {
-				const syntheticModulePath = resolve(this.options.target, 'node_modules', lernaPkg.name);
-				await fs.mkdirp(syntheticModulePath);
-				await copyDir(lernaPkg.location, syntheticModulePath);
-			});
-			await this.taper.tap(HookPhase.POSTLINK, analytics.dependencies.internal);
+			// pack final application if needed
+			if (this.options.packTarget) {
+				await execa('npm', ['pack', this.options.target]);
+			}
 
 			// finalize
 			await this.teardown();

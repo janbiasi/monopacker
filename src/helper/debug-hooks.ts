@@ -1,4 +1,4 @@
-import * as debug from 'debug';
+import debug from 'debug';
 import { IPackerOptions, HookPhase } from '../types';
 import { Packer, DEFAULT_PACKED_PATH } from '../Packer';
 import { countMsg, displayPath } from '../utils';
@@ -41,16 +41,6 @@ export function useDebugHooks(opts: Pick<IPackerOptions, 'target' | 'cwd' | 'sou
 				log(
 					`Found ${countMsg(analytics.dependencies.peer, 'aggregated peer package')} to include in production`
 				);
-			}
-		],
-		[HookPhase.PREINSTALL]: [
-			async (_packer, { name, dependencies }) => {
-				log(`Installing ${countMsg(dependencies, 'package')} in ${name} ...`);
-			}
-		],
-		[HookPhase.POSTINSTALL]: [
-			async (_packer, { dependencies }) => {
-				log(`Production packages have been installed (${countMsg(dependencies, 'package')})`);
 			}
 		],
 		[HookPhase.PRELINK]: [

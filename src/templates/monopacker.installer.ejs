@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+'use strict';
+
+const { exec } = require('child_process');
+
+exec(`npm i --ignore-scripts <%- packages.join(' ') %>`)
+	.then(stdout => {
+		console.log(`Monopacker post-installed <%= packages.length %> internal dependencies via tarballs`);
+	})
+	.catch(sterr => {
+		console.log(`Monopacker post-installer failed: %s`, stderr);
+	});
