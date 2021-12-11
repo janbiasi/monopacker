@@ -1,5 +1,14 @@
 [![Build Status](https://travis-ci.com/janbiasi/monopacker.svg?token=MXMxq8QRkbrDLive8EJ8&branch=master)](https://travis-ci.com/janbiasi/monopacker) [![npm version](https://badge.fury.io/js/monopacker.svg)](https://badge.fury.io/js/monopacker) [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)  [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
+----
+
+### :warning: Major revision in progress
+
+The current version of monopacker is outdated but still in use in a couple of projects. As there were a lot of changes in architectural design of monorepos
+in the last 2 years I'll continue to refactor the whole monopacker toolset into a new major revision.
+
+----
+
 # monopacker
 A tool for managing builds of monorepo frontend projects with eg. lerna or similar tools. Developers who are working within 
 monorepositories often have the problem that they need to deploy an application but don't want to deploy the whole repository.
