@@ -1,16 +1,8 @@
+/** @type {import('@jest/types').Config} */
 module.exports = {
-	preset: 'ts-jest',
 	testEnvironment: 'node',
-	globals: {
-		'ts-jest': {
-			tsConfig: 'tsconfig.test.json'
-		}
+	moduleNameMapper: {
+		'^@monopacker/(.*)$': '<rootDir>/packages/$1/src'
 	},
-	testPathIgnorePatterns: [
-		'<rootDir>/node_modules',
-		'<rootDir>/test/temp',
-		'<rootDir>/test/fixtures',
-		'<rootDir>/build',
-		'packed'
-	]
+	modulePathIgnorePatterns: ['fixtures']
 };
