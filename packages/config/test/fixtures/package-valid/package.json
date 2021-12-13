@@ -1,0 +1,9 @@
+{
+  "monopacker": {
+    "packs": [
+      {
+        "source": "apps/my-app"
+      }
+    ]
+  }
+}
