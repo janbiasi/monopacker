@@ -2,6 +2,10 @@
   "name": "monopacker",
   "version": "1.2.0",
   "description": "A tool for managing builds of monorepo frontend projects with eg. lerna or similar tools.",
+  "workspaces": [
+    "packages/*",
+    "cli"
+  ],
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "bin": {
@@ -9,10 +13,11 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "commit": "npx git-cz",
+    "commit": "npx cz",
     "prebuild": "rimraf build",
     "prettier": "prettier --write \"**/*.{json,ts,js}\"",
     "test": "jest",
+    "trial:test": "node --experimental-vm-modules node_modules/.bin/jest",
     "prerelease": "npm-run-all test build",
     "release": "semantic-release"
   },
@@ -45,26 +50,29 @@
     "debug": "4.1.1",
     "execa": "4.0.0",
     "fs-extra": "8.1.0",
-    "matcher": "2.1.0",
     "glob": "7.1.4",
+    "matcher": "2.1.0",
     "multimatch": "4.0.0",
     "ncp": "2.0.0",
     "ora": "4.0.3",
     "rimraf": "3.0.0"
   },
   "devDependencies": {
-    "@types/debug": "4.1.5",
-    "@types/fs-extra": "8.0.1",
-    "@types/jest": "24.0.25",
-    "@types/ncp": "2.0.3",
-    "@types/rimraf": "2.0.3",
-    "jest": "24.9.0",
-    "lerna": "3.20.2",
-    "npm-run-all": "4.1.5",
-    "prettier": "1.19.1",
-    "semantic-release": "15.14.0",
-    "ts-jest": "24.3.0",
-    "ts-node": "8.5.4",
-    "typescript": "3.7.4"
+    "@babel/preset-env": "7.16.4",
+    "@babel/preset-typescript": "7.16.0",
+    "@types/jest": "27.0.3",
+    "cz-conventional-changelog": "3.3.0",
+    "jest": "^27.4.4",
+    "lerna": "~4.0.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.5.1",
+    "ts-node": "10.4.0",
+    "tsconfig-paths": "3.12.0",
+    "typescript": "4.5.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

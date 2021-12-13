@@ -1,14 +1,30 @@
 {
 	"compilerOptions": {
-		"target": "es5",
-		"module": "commonjs",
-		"rootDir": "./src",
-		"outDir": "build",
 		"baseUrl": ".",
+		"rootDir": ".",
+		"noEmit": true,
+		"esModuleInterop": true,
+		"module": "ESNext",
 		"moduleResolution": "node",
-		"declaration": true,
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"preserveConstEnums": true,
+		"removeComments": false,
+		"skipLibCheck": true,
 		"sourceMap": true,
-		"resolveJsonModule": true
+		"strict": true,
+		"target": "esnext",
+		"types": ["node", "jest"],
+		"paths": {
+			"@monopacker/types": ["./packages/types/src"],
+			"@monopacker/plugin": ["./packages/plugin/src"],
+			"@monopacker/resolver": ["./packages/resolver/src"],
+			"@monopacker/config": ["./packages/config/src"],
+			"@monopacker/runtime": ["./packages/runtime/src"],
+			"@monopacker/log": ["./packages/log/src"]
+		}
 	},
-	"exclude": ["test"]
+	"exclude": ["**/fixtures"]
 }
