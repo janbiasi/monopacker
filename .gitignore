@@ -72,3 +72,7 @@ build
 # test packed
 packed
 temp
+
+# temporary fixtures to restore later on
+# for real e2e testing
+.restore-fixtures
