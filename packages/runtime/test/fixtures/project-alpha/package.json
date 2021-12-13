@@ -1,0 +1,9 @@
+{
+  "monopacker": {
+    "packs": [
+      {
+        "source": "@project-alpha/app"
+      }
+    ]
+  }
+}
