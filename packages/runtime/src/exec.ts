@@ -4,7 +4,7 @@ import { logger } from './logger';
 export interface ExecOptions {
 	command: string;
 	args?: string[];
-	cwd?: string;
+	cwd?: string | URL;
 	onData?: (data: string) => void;
 }
 
@@ -18,7 +18,16 @@ export function exec({ command, args, cwd, onData }: ExecOptions): Promise<strin
 
 			logger.debug(`Executing command: ${rawCommandStr}`);
 			const runner = spawn(command, args, {
-				cwd
+				/**
+				 * Allow seting current working directory manuall to not rely on `process.cwd()`
+				 */
+				cwd,
+				/**
+				 * `spawn` runs without shell per default which leads to a lot of failures with certain commands
+				 * @see https://nodejs.org/docs/latest-v14.x/api/child_process.html#child_process_spawning_bat_and_cmd_files_on_windows
+				 * @see https://stackoverflow.com/questions/37459717/error-spawn-enoent-on-windows/37487465
+				 */
+				shell: true
 			});
 
 			runner.stdout.on('data', (data: any) => {
