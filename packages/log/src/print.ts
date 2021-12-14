@@ -22,6 +22,9 @@ const colorToLevelMap: Record<LogLevel, Chalk> = {
 export function print(namespace: string, message: string, level: LogLevel) {
 	const cl = colorToLevelMap[level];
 	const levelSymbol = levelSymbolMap[level];
+	const colorizeMessage = level === 'error' || level === 'warn';
 
-	console.log(`${cl(levelSymbol)} ${cl(namespace.padEnd(visualNamespaceWidth))} ${message}`);
+	console.log(
+		`${cl(levelSymbol)} ${cl(namespace.padEnd(visualNamespaceWidth))} ${colorizeMessage ? cl(message) : message}`
+	);
 }

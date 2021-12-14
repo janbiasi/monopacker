@@ -5,7 +5,7 @@ import { Logger, LogLevel } from './types';
 const loglevels: LogLevel[] = ['debug', 'info', 'warn', 'error', 'success'];
 const visualLogPad = loglevels.reduce((size, level) => Math.max(size, level.length), 0);
 
-const logStack: string[] = [];
+let logStack: string[] = [];
 
 export function createLogger(namespace: Namespace): Logger {
 	return loglevels.reduce(
@@ -22,6 +22,10 @@ export function createLogger(namespace: Namespace): Logger {
 		}),
 		{} as Logger
 	);
+}
+
+export function clearLogStack() {
+	logStack = [];
 }
 
 export function getLogStack() {
