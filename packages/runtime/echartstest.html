@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Graph</title>
+		<style>
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+			}
+
+			body {
+				background-color: #100c2a;
+			}
+
+			#graph {
+				position: relative;
+				display: block;
+				margin: 15px;
+			}
+		</style>
+	</head>
+	<body>
+		<main id="graph"></main>
+		<script src="https://cdn.jsdelivr.net/npm/echarts@5.2.2/dist/echarts.min.js"></script>
+		<script>
+			const graphNode = document.getElementById('graph');
+
+			const chart = echarts.init(graphNode, 'dark', {
+				width: window.innerWidth - 30,
+				height: window.innerHeight - 30,
+			});
+
+			const nodes = [
+				{
+					id: '@package/a',
+					name: '@package/a',
+					symbolSize: 20,
+					value: '1.0.0',
+					category: 0,
+					symbol: 'roundRect',
+				},
+				{
+					id: '@package/b',
+					name: '@package/b',
+					symbolSize: 20,
+					value: '1.0.0',
+					category: 0,
+					symbol: 'roundRect',
+				},
+				{
+					id: 'react',
+					name: 'react',
+					symbolSize: 15,
+					value: '17.0.2',
+					category: 1,
+				},
+				{
+					id: 'jest',
+					name: 'jest',
+					symbolSize: 15,
+					value: '24.9.0',
+					category: 1,
+				},
+				{
+					id: 'app',
+					name: 'app',
+					symbolSize: 30,
+					value: '1.0.0',
+					category: 3,
+					symbol: 'pin',
+				},
+				{
+					id: 'jquery',
+					name: 'jquery',
+					symbolSize: 15,
+					value: '3.6.0',
+					category: 2,
+				},
+			];
+
+			const categories = [
+				{
+					name: 'Internal Dependency',
+				},
+				{
+					name: 'Dependency',
+				},
+				{
+					name: 'External Dependency',
+				},
+				{
+					name: 'Pack Entrypoint',
+				},
+			];
+
+			const links = [
+				{
+					source: '@package/a',
+					target: '@package/b',
+				},
+				{
+					source: '@package/a',
+					target: 'react',
+				},
+				{
+					source: '@package/b',
+					target: 'react',
+				},
+				{
+					source: 'app',
+					target: '@package/a',
+				},
+				{
+					source: '@package/a',
+					target: 'jest',
+				},
+				{
+					source: 'app',
+					target: 'jquery',
+				},
+			];
+
+			const options = {
+				title: [
+					{
+						text: 'Monopacker Graph',
+						top: 'bottom',
+						left: 'right',
+					},
+				],
+				legend: [
+					{
+						data: categories.map((category) => category.name),
+						show: true,
+					},
+				],
+				tooltip: {
+					formatter: '{b} {c}',
+				},
+				animationDurationUpdate: 1500,
+				animationEasingUpdate: 'quinticInOut',
+				layout: 'force',
+				series: [
+					{
+						name: 'Series Name',
+						type: 'graph',
+						layout: 'force',
+						focusNodeAdjacency: true,
+						roam: true,
+						label: {
+							show: true,
+							position: 'right',
+							formatter: '{b}',
+						},
+						itemStyle: {
+							borderColor: '#fff',
+							borderWidth: 1,
+							shadowBlur: 10,
+							shadowColor: 'rgba(0, 0, 0, 0.3)',
+						},
+						force: {
+							// initLayout: 'circular'
+							// gravity: 0
+							repulsion: 100,
+							edgeLength: 5,
+						},
+						draggable: true,
+						data: nodes,
+						categories: categories,
+						links: links,
+						emphasis: {
+							lineStyle: {
+								width: 10,
+							},
+						},
+					},
+				],
+				scaleLimit: {
+					min: 5,
+					max: 10,
+				},
+				edgeSymbol: ['circle', 'arrow'],
+				nodeScaleRatio: 0.4,
+				lineStyle: {
+					color: 'source',
+					curveness: 0.3,
+					width: 2,
+				},
+			};
+
+			chart.setOption(options);
+		</script>
+	</body>
+</html>

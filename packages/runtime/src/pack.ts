@@ -3,15 +3,21 @@ import { promises as fs } from 'fs';
 import type { PackConfig } from '@monopacker/config';
 import { Graph, PackageDependencyMap, PackageJson, resolveTargetGraph, searchFiles } from '@monopacker/resolver';
 import { createManagerTarball } from './commands/create-maanger-tarball';
-import { sanitizePackageName } from './utils/sanitize-package-name';
 import { mkdirp } from './utils/mkdirp';
 import { getPerfDuration, getPerfTime } from './utils/perf';
+import { sanitizePackageName } from './utils/sanitize-package-name';
 import { MONOPACKER_OUT_DIR, MONOPACKER_PACKAGES_DIR } from './const';
 import { logger } from './logger';
 
+/**
+ * TODO: Run pre and post pack npm hooks if present
+ * @param rootDir
+ * @param packConfig
+ * @param graph
+ */
 export async function pack(rootDir: string, packConfig: PackConfig, graph: Graph) {
 	const perfStartPack = getPerfTime();
-	const { source, copy, destination } = packConfig;
+	const { source, copy } = packConfig;
 	logger.info(`Starting to pack target project "${source}" ...`);
 
 	const { resolution, internals, name } = resolveTargetGraph(graph, source);
