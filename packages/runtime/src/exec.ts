@@ -1,5 +1,4 @@
 import { spawn } from 'child_process';
-import { logger } from './logger';
 
 export interface ExecOptions {
 	command: string;
@@ -10,13 +9,10 @@ export interface ExecOptions {
 
 export function exec({ command, args, cwd, onData }: ExecOptions): Promise<string> {
 	return new Promise<string>((resolve, reject) => {
-		const rawCommandStr = `${command} ${args?.join(' ')}`;
-
 		try {
 			let stdout: string = '';
 			let stderr: string = '';
 
-			logger.debug(`Executing command: ${rawCommandStr}`);
 			const runner = spawn(command, args, {
 				/**
 				 * Allow seting current working directory manuall to not rely on `process.cwd()`
@@ -27,7 +23,7 @@ export function exec({ command, args, cwd, onData }: ExecOptions): Promise<strin
 				 * @see https://nodejs.org/docs/latest-v14.x/api/child_process.html#child_process_spawning_bat_and_cmd_files_on_windows
 				 * @see https://stackoverflow.com/questions/37459717/error-spawn-enoent-on-windows/37487465
 				 */
-				shell: true
+				shell: true,
 			});
 
 			runner.stdout.on('data', (data: any) => {
@@ -41,7 +37,7 @@ export function exec({ command, args, cwd, onData }: ExecOptions): Promise<strin
 				stderr += data.toString();
 			});
 
-			runner.on('close', code => {
+			runner.on('close', (code) => {
 				if (code === 0) {
 					resolve(stdout);
 				} else {

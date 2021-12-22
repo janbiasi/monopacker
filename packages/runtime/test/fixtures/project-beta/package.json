@@ -2,7 +2,7 @@
   "monopacker": {
     "packs": [
       {
-        "source": "@project-alpha/app"
+        "source": "@project/app"
       }
     ]
   }

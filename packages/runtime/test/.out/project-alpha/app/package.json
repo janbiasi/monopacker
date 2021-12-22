@@ -1,9 +1,0 @@
-{
-  "name": "@project-alpha/app",
-  "version": "1.0.0",
-  "dependencies": {
-    "@project-alpha/package-a": "1.0.0",
-    "@project-alpha/package-b": "1.0.0",
-    "react": "17.0.2"
-  }
-}

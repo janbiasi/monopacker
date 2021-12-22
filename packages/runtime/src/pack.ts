@@ -1,20 +1,20 @@
 import { dirname, join, resolve } from 'path';
 import { promises as fs } from 'fs';
-import { PackConfig } from '@monopacker/config';
-import { getLogStack } from '@monopacker/log';
+import type { PackConfig } from '@monopacker/config';
 import { Graph, PackageDependencyMap, PackageJson, resolveTargetGraph, searchFiles } from '@monopacker/resolver';
 import { createManagerTarball } from './commands/create-maanger-tarball';
 import { sanitizePackageName } from './utils/sanitize-package-name';
 import { mkdirp } from './utils/mkdirp';
-import { logger } from './logger';
+import { getPerfDuration, getPerfTime } from './utils/perf';
 import { MONOPACKER_OUT_DIR, MONOPACKER_PACKAGES_DIR } from './const';
+import { logger } from './logger';
 
 export async function pack(rootDir: string, packConfig: PackConfig, graph: Graph) {
-	const perfStartPack = process.hrtime();
+	const perfStartPack = getPerfTime();
 	const { source, copy, destination } = packConfig;
-	logger.info(`Target ${source} -> ${destination}`);
+	logger.info(`Starting to pack target project "${source}" ...`);
 
-	const { resolution, resolved, name } = resolveTargetGraph(graph, source);
+	const { resolution, internals, name } = resolveTargetGraph(graph, source);
 	const safeName = sanitizePackageName(name);
 
 	const sourcePackagePath = dirname(graph.local[name].path);
@@ -29,8 +29,8 @@ export async function pack(rootDir: string, packConfig: PackConfig, graph: Graph
 
 	const tarballPackages: PackageDependencyMap = {};
 
-	const perfStartPackTars = process.hrtime();
-	for (const internalPkgName in resolved.internal) {
+	const perfStartPackTars = getPerfTime();
+	for (const internalPkgName in internals) {
 		const internalPkg = graph.local[internalPkgName];
 		const sanitizedPkgName = sanitizePackageName(internalPkgName);
 
@@ -44,15 +44,15 @@ export async function pack(rootDir: string, packConfig: PackConfig, graph: Graph
 			// save install path for local tarball as dependency
 			tarballPackages[internalPkgName] = `./${MONOPACKER_PACKAGES_DIR}/${tarballFileName}`;
 
-			logger.info(`Generated tarball artifact ${tarballFileName} for ${name}`);
+			logger.success(`Generated tarball artifact ${tarballFileName} for ${name}`);
 		} catch (err) {
 			logger.error(`Failed creating tarball archive for "${internalPkgName}":\n\n${err}`);
 		}
 	}
-	const perfEndPackTars = process.hrtime(perfStartPackTars);
+	const perfEndPackTars = getPerfDuration(perfStartPackTars);
 
 	// copy all files
-	const perfStartPackCopy = process.hrtime();
+	const perfStartPackCopy = getPerfTime();
 	const filesToCopy = await searchFiles(sourcePackagePath, copy || []);
 	if (filesToCopy.length > 0) {
 		logger.info(`Copying ${filesToCopy.length} files for ${name}`);
@@ -64,34 +64,33 @@ export async function pack(rootDir: string, packConfig: PackConfig, graph: Graph
 			`No files to copy for ${name}, this is usually not what you want. Please check your configuration to include sources for your application.`
 		);
 	}
-	const perfEndPackCopy = process.hrtime(perfStartPackCopy);
+	const perfEndPackCopy = getPerfDuration(perfStartPackCopy);
 
-	const perfEndPack = process.hrtime(perfStartPack);
+	const perfEndPack = getPerfDuration(perfStartPack);
 
 	const pkg: PackageJson = {
 		name: `@packed/${safeName}`,
 		version: graph.local[name].version,
 		dependencies: {
-			...resolution.remote,
-			...tarballPackages
+			...tarballPackages,
+			...graph.resolution[name].remote,
 		},
-		bundledDependencies: [...Object.keys(resolution.internal), ...Object.keys(resolution.remote)],
+		bundledDependencies: Object.keys(internals),
 		monopackerMeta: {
-			source,
-			name,
-			safeName,
+			bundleId: safeName,
+			packTarget: source,
 			resolution,
+			internals,
 			perf: {
-				// TODO: Outsource calc to a util + round to .3 precision
-				main: perfEndPack[0] + perfEndPack[1] / Math.pow(10, 9),
-				tars: perfEndPackTars[0] + perfEndPackTars[1] / Math.pow(10, 9),
-				copy: perfEndPackCopy[0] + perfEndPackCopy[1] / Math.pow(10, 9)
-			}
-		}
+				main: perfEndPack,
+				tars: perfEndPackTars,
+				copy: perfEndPackCopy,
+			},
+		},
 	};
 
+	// write aggregated package.json to target directory as last item to ensure it is the final package.json
 	await fs.writeFile(join(absoluteDestinationPath, 'package.json'), JSON.stringify(pkg, null, 2));
 
-	// TODO: do this in the root command for the whole packing process, not just for the target
-	await fs.writeFile(join(absoluteDestinationPath, 'monopacker.log'), getLogStack().join('\n'));
+	logger.success(`Packed single target project "${source}" successfully to ${relativeDestinationPath}`);
 }

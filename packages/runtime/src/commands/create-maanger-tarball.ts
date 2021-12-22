@@ -1,5 +1,6 @@
 import type { PackageManager } from '@monopacker/config';
 import { exec } from '../exec';
+import { logger } from '../logger';
 
 export async function createManagerTarball(manager: PackageManager, sourcePath: string, destinationPath: string) {
 	const specificManagerArgs =
@@ -8,6 +9,10 @@ export async function createManagerTarball(manager: PackageManager, sourcePath: 
 			  ['pack', sourcePath, '--pack-destination', destinationPath]
 			: // Yarn case
 			  ['pack', sourcePath, '--out', destinationPath];
+
+	logger.debug(
+		`Attempting to create tarball for ${sourcePath.replace(process.cwd(), '~')} via "${manager} pack" ...`
+	);
 
 	await exec({
 		command: manager,

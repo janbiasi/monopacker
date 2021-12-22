@@ -1,7 +1,0 @@
-{
-  "name": "@project-alpha/package-a",
-  "version": "1.0.0",
-  "dependencies": {
-    "dependency-of-a": "1.0.0"
-  }
-}
