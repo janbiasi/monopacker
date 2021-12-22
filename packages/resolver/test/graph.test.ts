@@ -74,7 +74,7 @@ describe('graph', () => {
 
             it('should resolve dependencies correctly', async () => {
                 const graph = await getPackageGraph(fixtureDir);
-                expect(Object.keys(graph.local)).toMatchSnapshot();
+                expect(Object.keys(graph.local).sort()).toMatchSnapshot();
                 expect(graph.resolution).toMatchSnapshot();
             });
         
