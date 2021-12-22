@@ -18,7 +18,7 @@ export function createLogger(namespace: Namespace): Logger {
 					)} ${message.replace(/\n/g, '')}`
 				);
 				print(namespace, message, level);
-			}
+			},
 		}),
 		{} as Logger
 	);

@@ -19,12 +19,17 @@ const colorToLevelMap: Record<LogLevel, Chalk> = {
 	success: chalk.green
 };
 
+const moduleInitTime = process.hrtime.bigint();
+
 export function print(namespace: string, message: string, level: LogLevel) {
 	const cl = colorToLevelMap[level];
 	const levelSymbol = levelSymbolMap[level];
 	const colorizeMessage = level === 'error' || level === 'warn';
+	const perfDiff = (process.hrtime.bigint() - moduleInitTime) / BigInt(1e6);
 
 	console.log(
-		`${cl(levelSymbol)} ${cl(namespace.padEnd(visualNamespaceWidth))} ${colorizeMessage ? cl(message) : message}`
+		`${cl(levelSymbol)} ${cl(namespace.padEnd(visualNamespaceWidth))} ${
+			colorizeMessage ? cl(message) : message
+		} ${chalk.gray(`+${perfDiff}ms`)}`
 	);
 }
