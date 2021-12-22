@@ -1,10 +1,11 @@
-import type { PackageDependencyMap } from "./package";
+import type { PackageDependencyMap } from './package';
 
 export interface GraphResolutionEntry {
-    internal: PackageDependencyMap;
-    remote: PackageDependencyMap;
-    peer: PackageDependencyMap;
-};
+	internal: PackageDependencyMap;
+	external: string[];
+	remote: PackageDependencyMap;
+	peer: PackageDependencyMap;
+}
 
 /**
  * The main graph aggregarted by the resolver. This is the base
@@ -13,9 +14,9 @@ export interface GraphResolutionEntry {
 export interface Graph {
 	local: {
 		[packageName: string]: {
-            path: string;
-            version: string;
-        };
+			path: string;
+			version: string;
+		};
 	};
 	resolution: {
 		[packageName: string]: GraphResolutionEntry;

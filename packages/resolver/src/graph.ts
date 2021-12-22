@@ -1,4 +1,4 @@
-import type { Config, ResolverConfig } from '@monopacker/config';
+import type { ResolverConfig } from '@monopacker/config';
 import type { Graph, GraphResolutionEntry } from './types/graph';
 import type { PackageJson } from './types/package';
 import { parsePackages } from './package';
@@ -8,23 +8,34 @@ import { resolve } from 'path';
 /**
  * Aggregate resolutions of dependencies for a single package, based on a list of other internal packages.
  * TODO: Respect semver ranges for each internal package
- * @param pkg 
- * @param internalPkgNames 
- * @returns 
+ * @param pkg
+ * @param internalPkgNames
+ * @returns
  * @private
  */
-export function getPackageResolutions(pkg: PackageJson, internalPkgNames: string[], config: ResolverConfig = {}): GraphResolutionEntry {
-    const dependencies = pkg.dependencies || {};
-    const peerDependencies = pkg.peerDependencies || {};
+export function getPackageResolutions(
+	pkg: PackageJson,
+	internalPkgNames: string[],
+	config: ResolverConfig = {}
+): GraphResolutionEntry {
+	const dependencies = pkg.dependencies || {};
+	const peerDependencies = pkg.peerDependencies || {};
+	const explicitExternals = config.externals || [];
 	const includePeers = config.includePeers === false ? false : true;
 
-    const resolutions: GraphResolutionEntry = {
-        internal: {},
-        remote: {},
-        peer: {}
-    };
+	const resolutions: GraphResolutionEntry = {
+		internal: {},
+		external: [],
+		remote: {},
+		peer: {},
+	};
 
 	for (const dependency in dependencies) {
+		if (explicitExternals.includes(dependency)) {
+			resolutions.external.push(dependency);
+			continue;
+		}
+
 		if (internalPkgNames.includes(dependency)) {
 			// internal dependency, should be packed locally
 			resolutions.internal[dependency] = dependencies[dependency];
@@ -33,9 +44,15 @@ export function getPackageResolutions(pkg: PackageJson, internalPkgNames: string
 			resolutions.remote[dependency] = dependencies[dependency];
 		}
 	}
-	
+
 	for (const peerDependency in peerDependencies) {
 		resolutions.peer[peerDependency] = peerDependencies[peerDependency];
+
+		if (explicitExternals.includes(peerDependency)) {
+			resolutions.external.push(peerDependency);
+			continue;
+		}
+
 		if (internalPkgNames.includes(peerDependency)) {
 			// internal peers should always be packed, even if not explicitly specified via `config.resolver.includePeers`
 			resolutions.internal[peerDependency] = peerDependencies[peerDependency];
@@ -53,27 +70,29 @@ export function getPackageResolutions(pkg: PackageJson, internalPkgNames: string
 
 /**
  * Get the main graph for all packages in the repository
- * @param rootDir 
- * @param config 
- * @returns 
+ * @param rootDir
+ * @param config
+ * @returns
  */
 export async function getPackageGraph(rootDir: string, config: ResolverConfig = {}): Promise<Graph> {
 	const packagePaths = await searchPackages(rootDir, config);
-    const packages = parsePackages(packagePaths.map(packagePath => resolve(rootDir, packagePath)));
+	const packages = parsePackages(packagePaths.map((packagePath) => resolve(rootDir, packagePath)));
 	const graph: Graph = {
-        local: {},
-        resolution: {},
-    };
+		local: {},
+		resolution: {},
+	};
 
 	// 1. build local graph to know which packages exist locally
 	for (const { pkg, location } of packages) {
 		if (graph.local[pkg.name]) {
-			throw new Error(`Duplicate package "${pkg.name}" detected at ${location}, unable to resolve internals correctly`);
+			throw new Error(
+				`Duplicate package "${pkg.name}" detected at ${location}, unable to resolve internals correctly`
+			);
 		}
 
 		graph.local[pkg.name] = {
 			version: pkg.version,
-			path: location
+			path: location,
 		};
 	}
 
@@ -81,8 +100,8 @@ export async function getPackageGraph(rootDir: string, config: ResolverConfig = 
 
 	// 2. build resolution graph based on known package
 	for (const { pkg } of packages) {
-		graph.resolution[pkg.name] = getPackageResolutions(pkg, internalPackageNames, config.resolver);
+		graph.resolution[pkg.name] = getPackageResolutions(pkg, internalPackageNames, config);
 	}
 
 	return graph;
-};
+}

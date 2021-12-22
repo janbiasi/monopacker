@@ -11,6 +11,7 @@ Array [
 exports[`graph getPackageGraph fixture: alpha should resolve dependencies correctly 2`] = `
 Object {
   "@project-alpha/app": Object {
+    "external": Array [],
     "internal": Object {
       "@project-alpha/package-a": "1.0.0",
       "@project-alpha/package-b": "1.0.0",
@@ -21,6 +22,7 @@ Object {
     },
   },
   "@project-alpha/package-a": Object {
+    "external": Array [],
     "internal": Object {},
     "peer": Object {},
     "remote": Object {
@@ -28,6 +30,7 @@ Object {
     },
   },
   "@project-alpha/package-b": Object {
+    "external": Array [],
     "internal": Object {},
     "peer": Object {},
     "remote": Object {
@@ -37,8 +40,83 @@ Object {
 }
 `;
 
+exports[`graph getPackageGraph fixture: beta should resolve dependencies correctly 1`] = `
+Array [
+  "@project/app",
+  "@project/package-a",
+  "@project/package-b",
+]
+`;
+
+exports[`graph getPackageGraph fixture: beta should resolve dependencies correctly 2`] = `
+Object {
+  "@project/app": Object {
+    "external": Array [],
+    "internal": Object {
+      "@project/package-a": "1.0.0",
+    },
+    "peer": Object {},
+    "remote": Object {},
+  },
+  "@project/package-a": Object {
+    "external": Array [],
+    "internal": Object {
+      "@project/package-b": "1.0.0",
+    },
+    "peer": Object {},
+    "remote": Object {},
+  },
+  "@project/package-b": Object {
+    "external": Array [],
+    "internal": Object {},
+    "peer": Object {},
+    "remote": Object {
+      "another-package": "1.0.0",
+    },
+  },
+}
+`;
+
+exports[`graph getPackageGraph fixture: externals should resolve dependencies correctly with provided externals 1`] = `
+Array [
+  "@project/app",
+  "@project/package-a",
+  "@project/package-b",
+]
+`;
+
+exports[`graph getPackageGraph fixture: externals should resolve dependencies correctly with provided externals 2`] = `
+Object {
+  "@project/app": Object {
+    "external": Array [],
+    "internal": Object {
+      "@project/package-a": "1.0.0",
+    },
+    "peer": Object {},
+    "remote": Object {},
+  },
+  "@project/package-a": Object {
+    "external": Array [],
+    "internal": Object {
+      "@project/package-b": "1.0.0",
+    },
+    "peer": Object {},
+    "remote": Object {},
+  },
+  "@project/package-b": Object {
+    "external": Array [],
+    "internal": Object {},
+    "peer": Object {},
+    "remote": Object {
+      "another-package": "1.0.0",
+    },
+  },
+}
+`;
+
 exports[`graph should aggregate dependency resolutions with internals and peer internals correctly 1`] = `
 Object {
+  "external": Array [],
   "internal": Object {
     "internalPackage": "^2.1.0",
     "internalPackage2": "^1.0.1",
@@ -56,6 +134,7 @@ Object {
 
 exports[`graph should aggregate dependency resolutions without "includePeers" flag correctly 1`] = `
 Object {
+  "external": Array [],
   "internal": Object {
     "internalPackage": "^2.1.0",
     "internalPackage2": "^1.0.1",
@@ -72,6 +151,7 @@ Object {
 
 exports[`graph should aggregate dependency resolutions without internals correctly 1`] = `
 Object {
+  "external": Array [],
   "internal": Object {},
   "peer": Object {
     "internalPackage2": "^1.0.1",
