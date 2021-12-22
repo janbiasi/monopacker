@@ -1,0 +1,11 @@
+{
+  "name": "fixture",
+  "version": "0.0.0",
+  "monopacker": {
+    "packs": [
+      {
+        "source": "@project/app"
+      }
+    ]
+  }
+}

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Monopacker - Graph Visualizer</title>
+		<style>
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+			}
+
+			body {
+				background-color: #100c2a;
+			}
+
+			#graph {
+				position: relative;
+				display: block;
+				margin: 15px;
+			}
+
+			#download {
+				cursor: pointer;
+				transition: all 0.25s ease-in-out;
+				display: inline-block;
+				font-weight: 600;
+				padding: 10px 20px;
+				background-color: #fff;
+				border: 1px solid #fff;
+				border-radius: 5px;
+				color: #100c2a;
+				position: absolute;
+				bottom: 15px;
+				left: 15px;
+			}
+
+			#download:hover {
+				opacity: 0.75;
+			}
+		</style>
+	</head>
+	<body>
+		<main id="graph"></main>
+		<button id="download">Download Chart</button>
+		<script src="https://cdn.jsdelivr.net/npm/echarts@5.2.2/dist/echarts.min.js"></script>
+		<script>
+			const graphNode = document.getElementById('graph');
+			const downloadButton = document.getElementById('download');
+
+			const chart = echarts.init(graphNode, 'dark', {
+				width: window.innerWidth - 30,
+				height: window.innerHeight - 30,
+			});
+
+			downloadButton.addEventListener('click', () => {
+				const imgUrl = chart.getDataURL({
+					pixelRatio: 2,
+					backgroundColor: '#100c2a',
+				});
+
+				const tempDonwloadLink = document.createElement('a');
+				tempDonwloadLink.style.display = 'none';
+				tempDonwloadLink.download = `monopacker-graph-${Date.now()}.jpg`;
+				tempDonwloadLink.href = imgUrl;
+				document.body.appendChild(tempDonwloadLink);
+				tempDonwloadLink.click();
+				tempDonwloadLink.remove();
+			});
+
+			const nodes = {{NODES}};
+			const categories = {{CATEGORIES}};
+			const links = {{LINKS}};
+
+			const options = {
+				animationDurationUpdate: 1500,
+				animationEasingUpdate: 'quinticInOut',
+				layout: 'force',
+				nodeScaleRatio: 0.4,
+				title: [
+					{
+						text: 'Monopacker Graph',
+						top: 'bottom',
+						left: 'right',
+					},
+				],
+				legend: [
+					{
+						data: categories.map((category) => category.name),
+						show: true,
+					},
+				],
+				tooltip: {
+					formatter: '{b} {c}',
+				},
+				scaleLimit: {
+					min: 5,
+					max: 10,
+				},
+				lineStyle: {
+					color: 'source',
+					curveness: 0.3,
+					width: 2,
+				},
+				series: [
+					{
+						name: 'Network',
+						type: 'graph',
+						layout: 'force',
+						focusNodeAdjacency: true,
+						roam: true,
+						draggable: true,
+						data: nodes,
+						categories: categories,
+						links: links,
+						edgeSymbol: ['none', 'arrow'],
+						symbolSize: 10,
+						label: {
+							show: true,
+							position: 'right',
+							formatter: '{b}',
+						},
+						itemStyle: {
+							borderColor: '#fff',
+							borderWidth: 1,
+							shadowBlur: 10,
+							shadowColor: 'rgba(0, 0, 0, 0.3)',
+						},
+						force: {
+							repulsion: 100,
+							edgeLength: 5,
+						},
+						lineStyle: {
+							color: 'source',
+							curveness: 0.3,
+							width: 2,
+						},
+						emphasis: {
+							lineStyle: {
+								width: 10,
+							},
+						},
+					},
+				],
+			};
+
+			chart.setOption(options);
+		</script>
+	</body>
+</html>

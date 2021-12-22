@@ -1,0 +1,9 @@
+{
+  "name": "@project/app",
+  "version": "1.0.0",
+  "dependencies": {
+    "@project/package-a": "1.0.0",
+    "typescript": "4.5.4",
+    "jquery": "3.6.0"
+  }
+}
