@@ -23,7 +23,8 @@
 			"@monopacker/resolver": ["./packages/resolver/src"],
 			"@monopacker/config": ["./packages/config/src"],
 			"@monopacker/runtime": ["./packages/runtime/src"],
-			"@monopacker/log": ["./packages/log/src"]
+			"@monopacker/log": ["./packages/log/src"],
+			"@monopacker/visualizer": ["./packages/visualizer/src"]
 		}
 	},
 	"exclude": ["**/fixtures"]
