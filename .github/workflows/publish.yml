@@ -2,9 +2,8 @@ name: Publish
 
 on:
   workflow_run:
-    workflows: ['CI']
-    types:
-      - completed
+    workflows: ['Build, Lint and Test']
+    types: [completed]
 
 jobs:
   publish-canary:
