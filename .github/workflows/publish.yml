@@ -1,21 +1,13 @@
 name: Node.js CI
 
-on:
-  push:
-    branches: [main, v2]
-  pull_request:
-    branches: [main, v2]
+on: [push, pull_request]
 
 jobs:
-  ci:
-    name: Build, Lint and Test
-
-    strategy:
-      matrix:
-        node-version: [16.x]
-        platform: [macos-latest, windows-latest]
-
-    runs-on: ${{ matrix.platform }}
+  publish-canary:
+    name: Publish Canary
+    runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/master'
+    needs: ci
 
     steps:
       - uses: actions/checkout@v2
@@ -33,19 +25,16 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+      - uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.com'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run test on ${{ matrix.platform }}
-        run: npm test
+      - name: Build packages
+        run: npm run build
 
-      - name: Upload compiled assets
-        uses: actions/upload-artifact@v2
-        with:
-          name: dist
-          path: '**/dist/**'
+      - name: Publish Canary
+        run: npm run publish-canary
