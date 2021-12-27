@@ -1,19 +1,28 @@
 {
-  "name": "monopacker",
-  "version": "1.2.0",
+  "name": "@monopacker/repository",
+  "version": "0.0.0",
+  "private": true,
   "description": "A tool for managing builds of monorepo frontend projects with eg. lerna or similar tools.",
   "workspaces": [
     "packages/*",
     "cli"
   ],
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "monopacker": "build/bin/monopacker-cli.js"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "run-s build:*",
+    "build:log": "npm run build --workspace=@monopacker/log",
+    "build:config": "npm run build --workspace=@monopacker/config",
+    "build:resolver": "npm run build --workspace=@monopacker/resolver",
+    "build:runtime": "npm run build --workspace=@monopacker/runtime",
+    "build:visualizer": "npm run build --workspace=@monopacker/visualizer",
+    "build:plugin": "npm run build --workspace=@monopacker/plugin",
+    "build:cli": "npm run build --workspace=monopacker",
     "commit": "npx cz",
+    "dev:cli": "npm run dev --workspace=monopacker",
     "prebuild": "rimraf build",
     "prettier": "prettier --write \"**/*.{json,ts,js}\"",
     "test": "jest",
@@ -64,7 +73,7 @@
     "cz-conventional-changelog": "3.3.0",
     "jest": "^27.4.4",
     "lerna": "~4.0.0",
-    "npm-run-all": "^4.1.5",
+    "npm-run-all": "4.1.5",
     "prettier": "^2.5.1",
     "ts-node": "10.4.0",
     "tsconfig-paths": "3.12.0",
