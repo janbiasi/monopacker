@@ -19,13 +19,12 @@ Object {
         "!**.md",
         "!tsconfig*.json",
       ],
-      "destination": "packed/<packageName>",
-      "internals": Array [],
-      "source": "apps/my-app",
+      "source": "my-app",
     },
   ],
   "resolver": Object {
     "deep": 7,
+    "externals": Array [],
     "followSymbolicLinks": true,
     "ignore": Array [
       "**/node_modules",
