@@ -1,5 +1,5 @@
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'success';
+import { LogLevelName } from './level';
 
 export type Logger = {
-	[key in LogLevel]: (message: string) => void;
+	[key in LogLevelName]: (message: string) => void;
 };

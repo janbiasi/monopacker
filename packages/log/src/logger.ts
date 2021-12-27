@@ -1,8 +1,9 @@
 import { Namespace, visualNamespaceWidth } from './namespace';
+import { LoggableLevel } from './level';
+import { Logger } from './types';
 import { print } from './print';
-import { Logger, LogLevel } from './types';
 
-const loglevels: LogLevel[] = ['debug', 'info', 'warn', 'error', 'success'];
+const loglevels: LoggableLevel[] = ['debug', 'info', 'warn', 'error', 'success'];
 const visualLogPad = loglevels.reduce((size, level) => Math.max(size, level.length), 0);
 
 let logStack: string[] = [];
@@ -17,7 +18,7 @@ export function createLogger(namespace: Namespace): Logger {
 						visualNamespaceWidth
 					)} ${message.replace(/\n/g, '')}`
 				);
-				print(namespace, message, level);
+				print(namespace, message, level as LoggableLevel);
 			},
 		}),
 		{} as Logger

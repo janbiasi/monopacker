@@ -2,11 +2,11 @@
   "name": "@monopacker/log",
   "version": "1.0.0",
   "description": "A tool for managing builds of monorepo frontend projects with eg. lerna or similar tools.",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "prebuild": "rimraf build",
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.build.json"
   },
   "repository": {
     "type": "git",
