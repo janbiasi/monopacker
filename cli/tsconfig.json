@@ -1,0 +1,16 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"rootDir": "."
+	},
+	"ts-node": {
+		// It is faster to skip typechecking.
+		// Remove if you want ts-node to do typechecking.
+		"transpileOnly": true,
+		"files": true,
+		"compilerOptions": {
+			"target": "es2016",
+			"module": "commonjs"
+		}
+	}
+}
