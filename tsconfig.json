@@ -1,22 +1,10 @@
 {
+	"extends": "./tsconfig.build.json",
 	"compilerOptions": {
 		"baseUrl": ".",
 		"rootDir": ".",
 		"noEmit": true,
-		"esModuleInterop": true,
-		"module": "ESNext",
-		"moduleResolution": "node",
-		"allowJs": true,
-		"allowSyntheticDefaultImports": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"preserveConstEnums": true,
-		"removeComments": false,
-		"skipLibCheck": true,
-		"sourceMap": true,
-		"strict": true,
-		"target": "esnext",
-		"types": ["node", "jest"],
+		"declaration": false,
 		"paths": {
 			"@monopacker/types": ["./packages/types/src"],
 			"@monopacker/plugin": ["./packages/plugin/src"],
@@ -26,6 +14,5 @@
 			"@monopacker/log": ["./packages/log/src"],
 			"@monopacker/visualizer": ["./packages/visualizer/src"]
 		}
-	},
-	"exclude": ["**/fixtures"]
+	}
 }
