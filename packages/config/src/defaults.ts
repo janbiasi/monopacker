@@ -1,9 +1,6 @@
-import type { Config, PackConfig, ResolverConfig } from "./types";
+import type { Config, PackConfig, ResolverConfig } from './types';
 
-export const requiredFilesToCopy = [
-	'!package.json',
-	'!node_modules',
-]
+export const requiredFilesToCopy = ['!package.json', '!node_modules'];
 
 /**
  * Files which should get copied
@@ -17,7 +14,7 @@ export const defaultFilesToCopy = [
 	'!.node-version',
 	'!.npmrc',
 	'!**.md',
-	'!tsconfig*.json'
+	'!tsconfig*.json',
 ];
 
 /**
@@ -36,21 +33,19 @@ export const defaultIgnorePatterns = [
 	'**/__tests__',
 	'**/__mocks__',
 	'**/__snapshots__',
-	'**/__test__'
+	'**/__test__',
 ];
 
 /**
  * Patch default config for a pack configuration
- * @param {PackConfig} config 
- * @returns 
+ * @param {PackConfig} config
+ * @returns
  */
 function patchPackDefaults(config: PackConfig): Required<PackConfig> {
 	return {
 		source: config.source,
-		destination: config.destination || `packed/<packageName>`,
 		copy: config.copy ? [...config.copy, ...requiredFilesToCopy] : defaultFilesToCopy,
-		internals: config.internals || [],
-	}
+	};
 }
 
 function patchResolverDefaults(config: ResolverConfig): Required<ResolverConfig> {
@@ -59,6 +54,7 @@ function patchResolverDefaults(config: ResolverConfig): Required<ResolverConfig>
 		deep: config.deep || 7,
 		followSymbolicLinks: config.followSymbolicLinks || true,
 		includePeers: config.includePeers || true,
+		externals: config.externals || [],
 	};
 }
 
