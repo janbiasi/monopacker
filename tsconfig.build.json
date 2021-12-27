@@ -1,0 +1,22 @@
+{
+	"compilerOptions": {
+		"outDir": "./dist",
+		"declaration": true,
+		"esModuleInterop": true,
+		"module": "CommonJS",
+		"moduleResolution": "node",
+		"allowJs": false,
+		"allowSyntheticDefaultImports": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"preserveConstEnums": true,
+		"removeComments": false,
+		"skipLibCheck": true,
+		"skipDefaultLibCheck": true,
+		"sourceMap": true,
+		"strict": true,
+		"target": "ES2015",
+		"types": ["node", "jest"]
+	},
+	"exclude": ["**/fixtures", "**/dist", "**/test"]
+}
