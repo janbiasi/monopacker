@@ -1,13 +1,16 @@
-name: Node.js CI
+name: Publish
 
-on: [push, pull_request]
+on:
+  workflow_run:
+    workflows: ['CI']
+    types:
+      - completed
 
 jobs:
   publish-canary:
     name: Publish Canary
     runs-on: ubuntu-latest
     if: github.ref != 'refs/heads/master'
-    needs: ci
 
     steps:
       - uses: actions/checkout@v2
