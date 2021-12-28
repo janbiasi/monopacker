@@ -1,0 +1,42 @@
+{
+  "name": "@monopacker/visualizer",
+  "version": "1.0.0",
+  "description": "Generating visualizations of package and pack graphs from Monopacker",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "prebuild": "rimraf build",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janbiasi/monopacker.git"
+  },
+  "keywords": [
+    "monorepository",
+    "monorepo",
+    "lerna",
+    "packer",
+    "pack",
+    "bundle",
+    "deploy",
+    "ci",
+    "tool",
+    "monopack",
+    "monopacker",
+    "nx",
+    "lerna"
+  ],
+  "author": "Jan Biasi <biasijan@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/janbiasi/monopacker/issues"
+  },
+  "homepage": "https://github.com/janbiasi/monopacker#readme",
+  "devDependencies": {
+    "@monopacker/resolver": "*",
+    "@types/node": "16.11.12",
+    "fs-extra": "10.0.0",
+    "typescript": "4.5.3"
+  }
+}

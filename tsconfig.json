@@ -1,14 +1,18 @@
 {
+	"extends": "./tsconfig.build.json",
 	"compilerOptions": {
-		"target": "es5",
-		"module": "commonjs",
-		"rootDir": "./src",
-		"outDir": "build",
 		"baseUrl": ".",
-		"moduleResolution": "node",
-		"declaration": true,
-		"sourceMap": true,
-		"resolveJsonModule": true
-	},
-	"exclude": ["test"]
+		"rootDir": ".",
+		"noEmit": true,
+		"declaration": false,
+		"paths": {
+			"@monopacker/types": ["./packages/types/src"],
+			"@monopacker/plugin": ["./packages/plugin/src"],
+			"@monopacker/resolver": ["./packages/resolver/src"],
+			"@monopacker/config": ["./packages/config/src"],
+			"@monopacker/runtime": ["./packages/runtime/src"],
+			"@monopacker/log": ["./packages/log/src"],
+			"@monopacker/visualizer": ["./packages/visualizer/src"]
+		}
+	}
 }

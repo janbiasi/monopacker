@@ -1,6 +1,0 @@
-{
-  "name": "fixture-filter",
-  "devDependencies": {
-    "lerna": "3.15.0"
-  }
-}

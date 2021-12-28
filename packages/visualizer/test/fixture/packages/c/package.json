@@ -1,0 +1,11 @@
+{
+  "name": "@project/package-c",
+  "version": "1.0.0",
+  "description": "NOTE: The main test case is that this react dep should be installed when the packed app gets installed",
+  "dependencies": {
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "jquery": "3.6.0",
+    "handlebars": "4.0.11"
+  }
+}

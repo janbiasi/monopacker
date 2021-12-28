@@ -1,0 +1,8 @@
+{
+  "name": "@project/package-b",
+  "version": "1.0.0",
+  "description": "NOTE: The main test case is that this react dep should be installed when the packed app gets installed",
+  "dependencies": {
+    "react": "17.0.2"
+  }
+}

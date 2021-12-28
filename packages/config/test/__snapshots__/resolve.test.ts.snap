@@ -1,0 +1,95 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`resolve should resolve a dedicated valid config correctly 1`] = `
+Object {
+  "cache": true,
+  "internals": Array [],
+  "packageManager": "npm",
+  "packs": Array [
+    Object {
+      "copy": Array [
+        "**",
+        "!package.json",
+        "!node_modules",
+        "!.editorconfig",
+        "!.gitignore",
+        "!.nvmrc",
+        "!.node-version",
+        "!.npmrc",
+        "!**.md",
+        "!tsconfig*.json",
+      ],
+      "source": "my-app",
+    },
+  ],
+  "resolver": Object {
+    "deep": 7,
+    "externals": Array [],
+    "followSymbolicLinks": true,
+    "ignore": Array [
+      "**/node_modules",
+      "**/bower_components",
+      "**/vendor",
+      "**/dist",
+      "**/build",
+      "**/lib",
+      "**/bin",
+      "**/test",
+      "**/tests",
+      "**/__tests__",
+      "**/__mocks__",
+      "**/__snapshots__",
+      "**/__test__",
+    ],
+    "includePeers": true,
+  },
+  "rootDir": "./",
+}
+`;
+
+exports[`resolve should resolve a package.json config correctly 1`] = `
+Object {
+  "cache": true,
+  "internals": Array [],
+  "packageManager": "npm",
+  "packs": Array [
+    Object {
+      "copy": Array [
+        "**",
+        "!package.json",
+        "!node_modules",
+        "!.editorconfig",
+        "!.gitignore",
+        "!.nvmrc",
+        "!.node-version",
+        "!.npmrc",
+        "!**.md",
+        "!tsconfig*.json",
+      ],
+      "source": "apps/my-app",
+    },
+  ],
+  "resolver": Object {
+    "deep": 7,
+    "externals": Array [],
+    "followSymbolicLinks": true,
+    "ignore": Array [
+      "**/node_modules",
+      "**/bower_components",
+      "**/vendor",
+      "**/dist",
+      "**/build",
+      "**/lib",
+      "**/bin",
+      "**/test",
+      "**/tests",
+      "**/__tests__",
+      "**/__mocks__",
+      "**/__snapshots__",
+      "**/__test__",
+    ],
+    "includePeers": true,
+  },
+  "rootDir": "./",
+}
+`;

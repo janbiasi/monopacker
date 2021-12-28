@@ -1,6 +1,0 @@
-{
-  "name": "fixture-self",
-  "devDependencies": {
-    "lerna": "3.15.0"
-  }
-}
