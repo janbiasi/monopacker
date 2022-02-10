@@ -1,6 +1,12 @@
+// @ts-check
+
 module.exports = {
 	preset: 'ts-jest',
+	verbose: true,
+	resetModules: true,
+	bail: 1,
 	testEnvironment: 'node',
+	maxConcurrency: 1,
 	globals: {
 		'ts-jest': {
 			tsConfig: 'tsconfig.test.json'
@@ -8,9 +14,11 @@ module.exports = {
 	},
 	testPathIgnorePatterns: [
 		'<rootDir>/node_modules',
-		'<rootDir>/test/temp',
 		'<rootDir>/test/fixtures',
 		'<rootDir>/build',
-		'packed'
-	]
+		'fixtures',
+		'temp',
+		'monopacked'
+	],
+	testResultsProcessor: './node_modules/jest-html-reporter'
 };

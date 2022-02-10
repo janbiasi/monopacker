@@ -61,7 +61,7 @@ typings/
 .next
 
 # test output
-test/**/temp
+packages/**/temp
 
 # vscode
 .vscode
@@ -70,5 +70,10 @@ test/**/temp
 build
 
 # test packed
+monopacked
+.monopacker
 packed
 temp
+
+# reports
+test-report.html

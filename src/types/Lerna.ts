@@ -5,13 +5,3 @@ export interface ILernaConfig {
 	version?: string;
 	packages: string[];
 }
-
-export interface ILernaPackageListEntry {
-	name: string;
-	description?: string;
-	version: string;
-	private: boolean;
-	location: string;
-}
-
-export type LernaPackageList = ILernaPackageListEntry[];

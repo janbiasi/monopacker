@@ -1,6 +1,6 @@
 {
   "name": "monopacker",
-  "version": "1.2.0",
+  "version": "3.0.0-rc.0",
   "description": "A tool for managing builds of monorepo frontend projects with eg. lerna or similar tools.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -8,12 +8,14 @@
     "monopacker": "build/bin/monopacker-cli.js"
   },
   "scripts": {
+    "clean": "npx rimraf node_modules build test/**/temp",
+    "prebuild": "rimraf build",
     "build": "tsc -p tsconfig.json",
     "commit": "npx git-cz",
-    "prebuild": "rimraf build",
-    "prettier": "prettier --write \"**/*.{json,ts,js}\"",
-    "test": "jest",
-    "prerelease": "npm-run-all test build",
+    "pretest": "rimraf ./test/**/*.gz ./test/**/.temp",
+    "test": "jest --runInBand",
+    "changelogs": "conventional-changelog -p angular -i CHANGELOG.md -s",
+    "prerelease": "npm-run-all test build changelogs",
     "release": "semantic-release"
   },
   "repository": {
@@ -53,18 +55,44 @@
     "rimraf": "3.0.0"
   },
   "devDependencies": {
+    "@semantic-release/commit-analyzer": "github:semantic-release/commit-analyzer",
+    "@semantic-release/github": "7.0.0",
+    "@semantic-release/npm": "7.0.0",
+    "@semantic-release/release-notes-generator": "9.0.0",
     "@types/debug": "4.1.5",
+    "@types/ejs": "2.6.3",
+    "@types/execa": "0.9.0",
     "@types/fs-extra": "8.0.1",
     "@types/jest": "24.0.25",
+    "@types/matcher": "1.1.0",
     "@types/ncp": "2.0.3",
     "@types/rimraf": "2.0.3",
+    "conventional-changelog-cli": "2.0.31",
+    "ejs": "3.0.1",
     "jest": "24.9.0",
-    "lerna": "3.20.2",
+    "jest-html-reporter": "2.8.0",
     "npm-run-all": "4.1.5",
     "prettier": "1.19.1",
-    "semantic-release": "15.14.0",
+    "semantic-release": "17.0.1",
     "ts-jest": "24.3.0",
     "ts-node": "8.5.4",
     "typescript": "3.7.4"
+  },
+  "files": [
+    "build",
+    ".releaserc",
+    "README.md",
+    "LICENSE"
+  ],
+  "config": {
+    "commitizen": {
+      "maxHeaderWidth": 120,
+      "maxLineWidth": 120,
+      "defaultType": "",
+      "defaultScope": "",
+      "defaultSubject": "",
+      "defaultBody": "",
+      "defaultIssues": ""
+    }
   }
 }

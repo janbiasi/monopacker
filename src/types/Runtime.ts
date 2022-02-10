@@ -1,7 +1,5 @@
-import { DependenciesLike, ArtificalPackage } from './Package';
-import { LernaPackageList } from './Lerna';
+import { DependenciesLike, ArtificalPackage, InternalPackageList } from './Package';
 import { IAdapterConstructable } from './Adapter';
-import { ILernaPackageListEntry } from './Lerna';
 import { Packer } from '../Packer';
 
 export enum HookPhase {
@@ -12,8 +10,6 @@ export enum HookPhase {
 	POSTCOPY = 'postcopy',
 	PRELINK = 'prelink',
 	POSTLINK = 'postlink',
-	PREINSTALL = 'preinstall',
-	POSTINSTALL = 'postinstall',
 	PACKED = 'packed'
 }
 
@@ -23,20 +19,23 @@ export interface IPackerOptions {
 	 */
 	source: string;
 	/**
-	 * Target for the packed app (root is cwd)
+	 * Enable to automatically install the packed project, default: `false`
+	 */
+	autoinstall?: boolean;
+	/**
+	 * Target for the packed app (root is cwd), default:
 	 */
 	target?: string;
 	/**
-	 * Monorepository type, at the moment only lerna support.
-	 * Default: auto-detected
+	 * Monorepository type, at the moment only lerna support, default: auto-detected
 	 */
 	type?: 'lerna' | 'nx';
 	/**
-	 * Enable or disable the cache, default is true (enabled)
+	 * Enable or disable the cache, default: `true` (enabled)
 	 */
 	cache?: boolean;
 	/**
-	 * Working directory, can be changed, default: process.cwd()
+	 * Working directory, can be changed, default: `process.cwd()`
 	 */
 	cwd?: string;
 	/**
@@ -46,11 +45,11 @@ export interface IPackerOptions {
 	 */
 	internals?: string[];
 	/**
-	 * The adapter for the analytics process, default: lerna
+	 * The adapter for the analytics process, default: `'lerna'`
 	 */
 	adapter?: IAdapterConstructable;
 	/**
-	 * Optional copy settings, defaults to `['**']`
+	 * Optional copy settings, default: `['**']`
 	 */
 	copy?: string[];
 	/**
@@ -58,7 +57,16 @@ export interface IPackerOptions {
 	 */
 	debug?: boolean;
 	/**
-	 * Define opt-in hooks for certain steps
+	 * Decide if you want an installer file (`monopacker.installer.js`)
+	 * as postinstall process or not, default: `false`
+	 */
+	createInstaller?: boolean;
+	/**
+	 * Decide if you want your target also packed or not, default: `false`
+	 */
+	packTarget?: boolean;
+	/**
+	 * Define opt-in hooks for certain steps, default: {}
 	 */
 	hooks?: Partial<{
 		[HookPhase.INIT]: Array<(packer: Packer) => Promise<any>>;
@@ -75,10 +83,10 @@ export interface IPackerOptions {
 		>;
 		[HookPhase.PRECOPY]: Array<(packer: Packer) => Promise<any>>;
 		[HookPhase.POSTCOPY]: Array<(packer: Packer, copiedFiles: string[]) => Promise<any>>;
-		[HookPhase.PRELINK]: Array<(packer: Packer, entries: ILernaPackageListEntry[]) => Promise<any>>;
-		[HookPhase.POSTLINK]: Array<(packer: Packer, entries: ILernaPackageListEntry[]) => Promise<any>>;
-		[HookPhase.PREINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
-		[HookPhase.POSTINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
+		[HookPhase.PRELINK]: Array<(packer: Packer, entries: InternalPackageList) => Promise<any>>;
+		[HookPhase.POSTLINK]: Array<(packer: Packer, entries: InternalPackageList) => Promise<any>>;
+		// [HookPhase.PREINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
+		// [HookPhase.POSTINSTALL]: Array<(packer: Packer, artificalPkg: ArtificalPackage) => Promise<any>>;
 		[HookPhase.PACKED]: Array<
 			(
 				packer: Packer,
@@ -94,7 +102,7 @@ export interface IPackerOptions {
 
 export interface IAnalytics {
 	dependencies: {
-		internal: LernaPackageList;
+		internal: InternalPackageList;
 		external: DependenciesLike;
 		peer: DependenciesLike;
 	};

@@ -1,10 +1,10 @@
 import { join, resolve } from 'path';
 import { Adapter } from './Adapter';
 import { getLernaPackages, asyncForEach, extractDependencies, fs, findDuplicatesInArray } from '../utils';
-import { DependenciesLike, IAnalytics, Package, LernaPackageList } from '../types';
+import { DependenciesLike, IAnalytics, Package, InternalPackageList } from '../types';
 
 interface ILernaPackageInfo {
-	packages: LernaPackageList;
+	packages: InternalPackageList;
 	names: string[];
 }
 
@@ -13,14 +13,14 @@ interface ILernaCircularGraph {
 }
 
 interface ILernaResolvedTree {
-	internal: LernaPackageList;
+	internal: InternalPackageList;
 	external: DependenciesLike;
 	graph: IAnalytics['graph'];
 }
 
 export class AdapterLerna extends Adapter {
 	private packageCache = new Map<string, Package>();
-	private lernaPackagesCache = new Map<string, LernaPackageList>();
+	private lernaPackagesCache = new Map<string, InternalPackageList>();
 
 	/**
 	 * Fetch required meta information for processing
@@ -138,7 +138,7 @@ export class AdapterLerna extends Adapter {
 		// format recursive output according to type definition
 		const recursiveInternals = recuriveModules.reduce(
 			(prev, curr) => [...prev, ...curr.internal],
-			[] as LernaPackageList
+			[] as InternalPackageList
 		);
 		const recursiveExternals = recuriveModules.reduce(
 			(prev, curr) => ({ ...prev, ...curr.external }),
@@ -169,7 +169,7 @@ export class AdapterLerna extends Adapter {
 	/**
 	 * Fetch all lerna packages from the defined cwd
 	 */
-	public async getLernaPackages(): Promise<LernaPackageList> {
+	public async getLernaPackages(): Promise<InternalPackageList> {
 		if (this.lernaPackagesCache.has(this.cwd)) {
 			return this.lernaPackagesCache.get(this.cwd);
 		}
